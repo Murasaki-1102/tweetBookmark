@@ -1,17 +1,10 @@
 import React, { FC, useState, useEffect } from "react";
 import { SafeAreaView, KeyboardAvoidingView } from "react-native";
-import {
-  Div,
-  Text,
-  Button,
-  Icon,
-  Modal,
-  Input,
-  useTheme,
-} from "react-native-magnus";
+import { Div, Text, Button, Icon, Input, useTheme } from "react-native-magnus";
 import EmojiBoard from "react-native-emoji-board";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../types/navigation";
+import firebase from "../../lib/firebase";
 
 type EditTagModalScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, "EditTagModal">;
@@ -20,7 +13,7 @@ type EditTagModalScreenProps = {
 export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
   navigation,
 }) => {
-  const [emoji, setEmoji] = useState("");
+  const [emoji, setEmoji] = useState("💭");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [value, setValue] = useState("");
   const { theme } = useTheme();
@@ -31,11 +24,19 @@ export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
   };
 
   const onSubmit = () => {
+    const { currentUser } = firebase.auth();
+    if (currentUser) {
+      firebase
+        .firestore()
+        .collection(`users/${currentUser.uid}/tags`)
+        .add({ name: value, emoji, createdAt: new Date() })
+        .catch((error) => console.log(error));
+    }
+
     onClose();
   };
 
   return (
-    // <Modal isVisible={visible} animationIn="fadeInLeft">
     <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors?.body }}>
         <Div flex={1} alignItems="center" py={120} justifyContent="center">
@@ -102,6 +103,7 @@ export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
             bg="twitter"
             alignSelf="center"
             rounded="circle"
+            disabled={value.length === 0}
             onPress={onSubmit}
           >
             作成する
@@ -109,6 +111,5 @@ export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
         </Div>
       </SafeAreaView>
     </KeyboardAvoidingView>
-    // </Modal>
   );
 };

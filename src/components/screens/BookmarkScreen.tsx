@@ -12,7 +12,7 @@ type BookmarkScreenProps = {
 };
 
 export const BookmarkScreen: FC<BookmarkScreenProps> = ({ navigation }) => {
-  const { tags } = useContext(TagContext);
+  const { tags, getTags } = useContext(TagContext);
 
   const onPressModalOpen = () => {
     navigation.navigate("EditTagModal");
@@ -35,6 +35,10 @@ export const BookmarkScreen: FC<BookmarkScreenProps> = ({ navigation }) => {
         </Button>
       ),
     });
+  }, []);
+
+  useEffect(() => {
+    getTags();
   }, []);
 
   return (
@@ -62,8 +66,6 @@ export const BookmarkScreen: FC<BookmarkScreenProps> = ({ navigation }) => {
                     rounded="md"
                     p={12}
                     mr="lg"
-                    // position="absolute"
-                    // left={8}
                   />
                 }
                 onPress={onPressModalOpen}

@@ -1,13 +1,19 @@
-import React, { FC, useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Text, Div, Icon, useTheme } from "react-native-magnus";
 import { Modalize } from "react-native-modalize";
 import { TagContext } from "../contexts/TagContext";
 import { Tag } from "../../types/tag";
+import { useNavigation } from "@react-navigation/native";
 
 export const BottomSheet = () => {
   const [selectTags, setSelectedTags] = useState<Tag[]>([]);
-  const { modalizeRef, closeSelectTag, tags } = useContext(TagContext);
+  const { modalizeRef, closeSelectTag, tags, getTags } = useContext(TagContext);
   const { theme } = useTheme();
+  const { navigate } = useNavigation();
+
+  useEffect(() => {
+    getTags();
+  }, []);
 
   const handleChange = (tag: Tag) => {
     const selected = selectTags.includes(tag);
@@ -54,33 +60,61 @@ export const BottomSheet = () => {
     );
   };
 
+  const ListFooterComponent = () => (
+    <Button
+      bg="selected"
+      alignSelf="center"
+      rounded="lg"
+      mt="lg"
+      onPress={() => navigate("EditTagModal")}
+      prefix={
+        <Icon
+          name="add"
+          fontFamily="MaterialIcons"
+          fontSize="xl"
+          rounded="md"
+          mr="md"
+        />
+      }
+    >
+      <Text>タグを作成する</Text>
+    </Button>
+  );
+
+  const HeaderComponent = () => (
+    <Div p="lg" borderBottomWidth={1} borderColor="selected">
+      <Text fontSize="3xl">ブックマーク</Text>
+    </Div>
+  );
+  const FooterComponent = () => (
+    <Div>
+      <Button
+        block
+        rounded="lg"
+        mx="xl"
+        my="lg"
+        bg="twitter"
+        disabled={selectTags.length === 0}
+        onPress={closeSelectTag}
+      >
+        追加する
+      </Button>
+    </Div>
+  );
+
   return (
     <Modalize
       ref={modalizeRef}
       flatListProps={{
         data: tags,
         renderItem,
-        style: { backgroundColor: theme.colors?.body },
+        ListFooterComponent,
+        style: {
+          backgroundColor: theme.colors?.body,
+        },
       }}
-      HeaderComponent={
-        <Div p="lg" borderBottomWidth={1} borderColor="selected">
-          <Text fontSize="3xl">ブックマーク</Text>
-        </Div>
-      }
-      FooterComponent={
-        <Div>
-          <Button
-            block
-            rounded="lg"
-            mx="xl"
-            my="lg"
-            bg="twitter"
-            onPress={closeSelectTag}
-          >
-            追加する
-          </Button>
-        </Div>
-      }
+      HeaderComponent={HeaderComponent}
+      FooterComponent={FooterComponent}
       modalHeight={400}
       // adjustToContentHeight
       onClose={() => setSelectedTags([])}

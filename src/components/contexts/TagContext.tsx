@@ -1,9 +1,11 @@
-import React, { FC, useRef, createContext, RefObject } from "react";
+import React, { FC, useState, useRef, createContext, RefObject } from "react";
 import { Modalize } from "react-native-modalize";
 import { Tag } from "../../types/tag";
+import firebase from "../../lib/firebase";
 
 type TagContextValue = {
   tags: Tag[];
+  getTags: () => void;
   modalizeRef: RefObject<Modalize>;
   openSelectTag: () => void;
   closeSelectTag: () => void;
@@ -12,15 +14,29 @@ type TagContextValue = {
 export const TagContext = createContext<TagContextValue>({} as TagContextValue);
 
 export const TagProvider: FC = ({ children }) => {
-  //fetch
-  const tags: Tag[] = [
-    { name: "おもしろ", emoji: "😂", tweets: [] },
-    { name: "かわいい", emoji: "😎", tweets: [] },
-    { name: "ためになる", emoji: "😈", tweets: [] },
-    { name: "おもしろ", emoji: "😂", tweets: [] },
-    { name: "かわいい", emoji: "😎", tweets: [] },
-    { name: "ためになる", emoji: "😈", tweets: [] },
-  ];
+  const [tags, setTags] = useState<Tag[]>([]);
+
+  const getTags = async () => {
+    const { currentUser } = firebase.auth();
+    if (currentUser) {
+      firebase
+        .firestore()
+        .collection(`users/${currentUser?.uid}/tags`)
+        .orderBy("createdAt", "asc")
+        .onSnapshot(async (snapshot) => {
+          const userTags: Tag[] = [];
+          await snapshot.forEach((doc) => {
+            userTags.push({
+              name: doc.data().name,
+              emoji: doc.data().emoji,
+              tweets: [],
+              createdAt: doc.data().createdAt,
+            });
+          });
+          setTags(userTags);
+        });
+    }
+  };
 
   const modalizeRef = useRef<Modalize>(null);
 
@@ -35,6 +51,7 @@ export const TagProvider: FC = ({ children }) => {
     <TagContext.Provider
       value={{
         tags,
+        getTags,
         modalizeRef,
         openSelectTag,
         closeSelectTag,
