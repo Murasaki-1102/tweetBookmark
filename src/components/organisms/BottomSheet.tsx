@@ -24,8 +24,6 @@ export const BottomSheet = () => {
     }
   };
 
-  console.log(selectTags);
-
   const renderItem = ({ item, index }: { item: Tag; index: number }) => {
     const selected = selectTags.includes(item);
     return (
@@ -66,7 +64,7 @@ export const BottomSheet = () => {
       alignSelf="center"
       rounded="lg"
       mt="lg"
-      onPress={() => navigate("EditTagModal")}
+      onPress={() => navigate("EditTagModal", {})}
       prefix={
         <Icon
           name="add"
@@ -109,6 +107,7 @@ export const BottomSheet = () => {
         data: tags,
         renderItem,
         ListFooterComponent,
+        keyExtractor: (_, index) => index.toString(),
         style: {
           backgroundColor: theme.colors?.body,
         },

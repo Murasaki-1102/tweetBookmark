@@ -12,11 +12,11 @@ import { TagButton } from "../organisms/TagButton";
 import { Tag } from "../../types/tag";
 import firebase from "../../lib/firebase";
 
-type BookmarkScreenProps = {
-  navigation: DrawerNavigationProp<RootStackParamList, "Bookmark">;
+type TagListScreenProps = {
+  navigation: DrawerNavigationProp<RootStackParamList, "TagList">;
 };
 
-export const BookmarkScreen: FC<BookmarkScreenProps> = ({ navigation }) => {
+export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
   const { tags, setTags, getTags } = useContext(TagContext);
   const { currentUser } = firebase.auth();
 
@@ -40,7 +40,7 @@ export const BookmarkScreen: FC<BookmarkScreenProps> = ({ navigation }) => {
   }, []);
 
   const onPressModalOpen = () => {
-    navigation.navigate("EditTagModal");
+    navigation.navigate("EditTagModal", {});
   };
 
   const onPressTag = (id: string) => {
@@ -92,19 +92,43 @@ export const BookmarkScreen: FC<BookmarkScreenProps> = ({ navigation }) => {
       <SwipeableItem
         key={index}
         item={item}
-        snapPointsLeft={[80]}
-        renderUnderlayLeft={({ close }) => (
-          <Button
-            bg="red600"
-            h="100%"
-            rounded="none"
-            alignSelf="flex-end"
-            onPress={() => {
-              onPressDelete(item.id, close);
-            }}
-          >
-            <Text color="white">削除する</Text>
-          </Button>
+        snapPointsLeft={[160]}
+        renderUnderlayLeft={({ item, close }) => (
+          <Div h="100%" row justifyContent="flex-end">
+            <Button
+              bg="green500"
+              h="100%"
+              rounded="none"
+              onPress={() => {
+                navigation.navigate("EditTagModal", { id: item.id });
+                close();
+              }}
+            >
+              <Icon
+                name="square-edit-outline"
+                fontFamily="MaterialCommunityIcons"
+                fontSize="6xl"
+                px="lg"
+                color="white"
+              />
+            </Button>
+            <Button
+              bg="red600"
+              h="100%"
+              rounded="none"
+              onPress={() => {
+                onPressDelete(item.id, close);
+              }}
+            >
+              <Icon
+                name="trash-can-outline"
+                fontFamily="MaterialCommunityIcons"
+                fontSize="6xl"
+                px="lg"
+                color="white"
+              />
+            </Button>
+          </Div>
         )}
         overSwipe={20}
       >

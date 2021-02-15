@@ -1,23 +1,30 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useContext } from "react";
 import { SafeAreaView, KeyboardAvoidingView } from "react-native";
 import { Div, Text, Button, Icon, Input, useTheme } from "react-native-magnus";
 import EmojiBoard from "react-native-emoji-board";
+import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../types/navigation";
 import firebase from "../../lib/firebase";
+import { TagContext } from "../contexts/TagContext";
 
 type EditTagModalScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, "EditTagModal">;
+  route: RouteProp<RootStackParamList, "Tag">;
 };
 
 export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
   navigation,
+  route,
 }) => {
-  const [emoji, setEmoji] = useState("💭");
+  const { id } = route.params;
+  const { tags } = useContext(TagContext);
+  const tag = tags.find((tag) => tag.id === id);
+
+  const [emoji, setEmoji] = useState(tag?.emoji || "💭");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [value, setValue] = useState("");
+  const [name, setName] = useState(tag?.name || "");
   const { theme } = useTheme();
-  useEffect(() => {}, []);
 
   const onClose = () => {
     navigation.goBack();
@@ -26,21 +33,29 @@ export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
   const onSubmit = async () => {
     const { currentUser } = firebase.auth();
     if (currentUser) {
-      const documentLength = await firebase
-        .firestore()
-        .collection(`users/${currentUser.uid}/tags`)
-        .get()
-        .then((snap) => snap.size);
-      firebase
-        .firestore()
-        .collection(`users/${currentUser.uid}/tags`)
-        .add({
-          name: value,
-          emoji,
-          index: documentLength,
-          createdAt: new Date(),
-        })
-        .catch((error) => console.log(error));
+      if (id) {
+        firebase
+          .firestore()
+          .collection(`users/${currentUser.uid}/tags`)
+          .doc(id)
+          .update({ name: name, emoji });
+      } else {
+        const documentLength = await firebase
+          .firestore()
+          .collection(`users/${currentUser.uid}/tags`)
+          .get()
+          .then((snap) => snap.size);
+        firebase
+          .firestore()
+          .collection(`users/${currentUser.uid}/tags`)
+          .add({
+            name: name,
+            emoji,
+            index: documentLength,
+            createdAt: new Date(),
+          })
+          .catch((error) => console.log(error));
+      }
     }
 
     onClose();
@@ -103,9 +118,10 @@ export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
             borderBottomWidth={1}
             bg="body"
             w="70%"
+            fontSize="2xl"
             autoCapitalize="none"
-            value={value}
-            onChangeText={setValue}
+            value={name}
+            onChangeText={setName}
           />
 
           <Button
@@ -113,10 +129,10 @@ export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
             bg="twitter"
             alignSelf="center"
             rounded="circle"
-            disabled={value.length === 0}
+            disabled={name.length === 0}
             onPress={onSubmit}
           >
-            作成する
+            <Text color="white">{id ? "編集する" : "作成する"}</Text>
           </Button>
         </Div>
       </SafeAreaView>

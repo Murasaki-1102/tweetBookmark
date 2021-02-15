@@ -1,6 +1,6 @@
 import React from "react";
 import { createStackNavigator, Header } from "@react-navigation/stack";
-import { BookmarkScreen } from "../screens/BookmarkScreen";
+import { TagListScreen } from "../screens/TagListScreen";
 import { RootStackParamList } from "../../types/navigation";
 import { TagScreen } from "../screens/TagScreen";
 import { EditThemeScreen } from "../screens/EditThemeScreen";
@@ -30,7 +30,7 @@ export const BookmarkStackNavigator = () => {
         ),
       }}
     >
-      <Stack.Screen name="Bookmark" component={BookmarkScreen} />
+      <Stack.Screen name="TagList" component={TagListScreen} />
       <Stack.Screen name="Tag" component={TagScreen} />
       <Stack.Screen
         name="EditTheme"
