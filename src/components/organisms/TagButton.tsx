@@ -5,9 +5,14 @@ import { Tag } from "../../types/tag";
 type TagButtonProps = {
   tag: Tag;
   onPress?: () => void;
+  onLongPress?: any;
 };
 
-export const TagButton: FC<TagButtonProps> = ({ tag, onPress }) => {
+export const TagButton: FC<TagButtonProps> = ({
+  tag,
+  onPress,
+  onLongPress,
+}) => {
   return (
     <Button
       flex={1}
@@ -23,8 +28,9 @@ export const TagButton: FC<TagButtonProps> = ({ tag, onPress }) => {
         </Text>
       }
       onPress={onPress}
+      onLongPress={onLongPress}
     >
-      <Div>
+      <Div bg="transparent">
         <Text fontSize="3xl">{tag.name}</Text>
         <Text fontSize="xl" mt="sm">
           {`tweet数: ${tag.tweets.length}`}

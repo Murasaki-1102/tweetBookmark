@@ -23,13 +23,23 @@ export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
     navigation.goBack();
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const { currentUser } = firebase.auth();
     if (currentUser) {
+      const documentLength = await firebase
+        .firestore()
+        .collection(`users/${currentUser.uid}/tags`)
+        .get()
+        .then((snap) => snap.size);
       firebase
         .firestore()
         .collection(`users/${currentUser.uid}/tags`)
-        .add({ name: value, emoji, createdAt: new Date() })
+        .add({
+          name: value,
+          emoji,
+          index: documentLength,
+          createdAt: new Date(),
+        })
         .catch((error) => console.log(error));
     }
 

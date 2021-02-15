@@ -6546,6 +6546,11 @@ react-native-dotenv@^2.5.3:
   dependencies:
     dotenv "^8.0.0"
 
+react-native-draggable-flatlist@^2.5.4:
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/react-native-draggable-flatlist/-/react-native-draggable-flatlist-2.5.4.tgz#31ef421e05a7273495995d11852f5892634ad860"
+  integrity sha512-ylnJFB16hTy6G4Z0b7OWJrmgVh5dvm1YvZ7jGBYtOW1tjgC//QhhRO9YhoNKFzPB32UsFsweU6RNGZTASnw0yQ==
+
 react-native-emoji-board@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-native-emoji-board/-/react-native-emoji-board-1.2.1.tgz#4302c874c6e7f80b80e6698ad6d642c48e8c1aaf"
@@ -6630,6 +6635,11 @@ react-native-simple-twitter@^3.0.6:
   dependencies:
     crypto-js "^3.1.9-1"
     react-native-webview "^8.0.1"
+
+react-native-swipeable-item@^1.5.4:
+  version "1.5.4"
+  resolved "https://registry.yarnpkg.com/react-native-swipeable-item/-/react-native-swipeable-item-1.5.4.tgz#e003c75195689e177b7b01c7ec2381d2cc065e4f"
+  integrity sha512-Ef782l8pQgVotw9ZoOMY8fnCEiQSoiIBhwRQpNkI9DEYJ7Rpv4JglxnurzAq0AcaJqMxnygHChcKmD3Sz2K7PA==
 
 react-native-tab-view@^2.15.2:
   version "2.15.2"

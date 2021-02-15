@@ -1,10 +1,19 @@
-import React, { FC, useState, useRef, createContext, RefObject } from "react";
+import React, {
+  FC,
+  useState,
+  useRef,
+  createContext,
+  RefObject,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { Modalize } from "react-native-modalize";
 import { Tag } from "../../types/tag";
 import firebase from "../../lib/firebase";
 
 type TagContextValue = {
   tags: Tag[];
+  setTags: Dispatch<SetStateAction<Tag[]>>;
   getTags: () => void;
   modalizeRef: RefObject<Modalize>;
   openSelectTag: () => void;
@@ -22,15 +31,18 @@ export const TagProvider: FC = ({ children }) => {
       firebase
         .firestore()
         .collection(`users/${currentUser?.uid}/tags`)
-        .orderBy("createdAt", "asc")
+        .orderBy("index", "asc")
         .onSnapshot(async (snapshot) => {
           const userTags: Tag[] = [];
           await snapshot.forEach((doc) => {
+            const data = doc.data();
             userTags.push({
-              name: doc.data().name,
-              emoji: doc.data().emoji,
+              id: doc.id,
+              index: data.index,
+              name: data.name,
+              emoji: data.emoji,
               tweets: [],
-              createdAt: doc.data().createdAt,
+              createdAt: data.createdAt.toDate(),
             });
           });
           setTags(userTags);
@@ -51,6 +63,7 @@ export const TagProvider: FC = ({ children }) => {
     <TagContext.Provider
       value={{
         tags,
+        setTags,
         getTags,
         modalizeRef,
         openSelectTag,
