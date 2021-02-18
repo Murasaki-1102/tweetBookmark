@@ -1,4 +1,4 @@
-import React, { FC, useState, useContext } from "react";
+import React, { FC, useState } from "react";
 import { SafeAreaView, KeyboardAvoidingView } from "react-native";
 import { Div, Text, Button, Icon, Input, useTheme } from "react-native-magnus";
 import EmojiBoard from "react-native-emoji-board";
@@ -6,7 +6,10 @@ import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../types/navigation";
 import firebase from "../../lib/firebase";
-import { TagContext } from "../contexts/TagContext";
+import {
+  useTagListAction,
+  useTagListState,
+} from "../../hooks/useTagList/useTagList";
 
 type EditTagModalScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, "EditTagModal">;
@@ -17,14 +20,17 @@ export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
   navigation,
   route,
 }) => {
-  const { id } = route.params;
-  const { tags } = useContext(TagContext);
-  const tag = tags.find((tag) => tag.id === id);
+  console.log("🚀 ~ file: EditTagModalScreen.tsx ~ line 21 ~ id");
+  const { tagList } = useTagListState();
+  const { addTag, updateTagById } = useTagListAction();
+  const tag = tagList.find((tag) => tag.id === id);
 
   const [emoji, setEmoji] = useState(tag?.emoji || "💭");
-  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [name, setName] = useState(tag?.name || "");
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const { theme } = useTheme();
+
+  const { id } = route.params;
 
   const onClose = () => {
     navigation.goBack();
@@ -34,27 +40,9 @@ export const EditTagModalScreen: FC<EditTagModalScreenProps> = ({
     const { currentUser } = firebase.auth();
     if (currentUser) {
       if (id) {
-        firebase
-          .firestore()
-          .collection(`users/${currentUser.uid}/tags`)
-          .doc(id)
-          .update({ name: name, emoji });
+        updateTagById(id, name, emoji);
       } else {
-        const documentLength = await firebase
-          .firestore()
-          .collection(`users/${currentUser.uid}/tags`)
-          .get()
-          .then((snap) => snap.size);
-        firebase
-          .firestore()
-          .collection(`users/${currentUser.uid}/tags`)
-          .add({
-            name: name,
-            emoji,
-            index: documentLength,
-            createdAt: new Date(),
-          })
-          .catch((error) => console.log(error));
+        addTag(name, emoji);
       }
     }
 

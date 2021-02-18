@@ -1,10 +1,10 @@
-import React, { FC, useContext, useEffect } from "react";
+import React, { FC, useEffect } from "react";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SafeAreaView, KeyboardAvoidingView } from "react-native";
 import { Div, Text, Button, Icon, Modal, Input } from "react-native-magnus";
 import { RootStackParamList } from "../../types/navigation";
-import { TagContext } from "../contexts/TagContext";
+import { useTagListState } from "../../hooks/useTagList/useTagList";
 
 type TagScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, "Tag">;
@@ -13,9 +13,9 @@ type TagScreenProps = {
 
 export const TagScreen: FC<TagScreenProps> = ({ route, navigation }) => {
   const { id } = route.params;
-  const { tags } = useContext(TagContext);
+  const { tagList } = useTagListState();
   //Non-serializable対策
-  const tag = tags.find((tag) => tag.id === id);
+  const tag = tagList.find((tag) => tag.id === id);
 
   useEffect(() => {
     navigation.setOptions({ title: tag?.name });

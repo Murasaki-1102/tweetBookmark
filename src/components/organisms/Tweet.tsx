@@ -1,9 +1,9 @@
-import React, { FC, useContext } from "react";
+import React, { FC } from "react";
 import { TouchableHighlight } from "react-native";
 import { Div, Text, Button, Image, Icon } from "react-native-magnus";
 import { useBottomSheetAction } from "../../hooks/useBottomSheet/useBottomSheet";
+import { useTagListState } from "../../hooks/useTagList/useTagList";
 import { TweetType } from "../../types/tweet";
-import { TagListStateContext } from "../contexts/TagListContext";
 
 type TweetProps = {
   tweet: TweetType;
@@ -12,7 +12,7 @@ type TweetProps = {
 const BottomSheetButton: FC<TweetProps> = ({ tweet }) => {
   console.log("button");
   const { openBottomSheet } = useBottomSheetAction();
-  const { tagList } = useContext(TagListStateContext);
+  const { tagList } = useTagListState();
   const selectedTag: boolean = tagList.some(
     (tag) => tag.tweets.filter((t) => t.id_str === tweet.id_str).length
   );

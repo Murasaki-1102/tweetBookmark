@@ -1,4 +1,4 @@
-import React, { FC, useContext } from "react";
+import React, { FC } from "react";
 import { Div, Text, Button, Icon } from "react-native-magnus";
 import { Tag } from "../../types/tag";
 
@@ -33,7 +33,7 @@ export const TagButton: FC<TagButtonProps> = ({
       <Div bg="transparent">
         <Text fontSize="3xl">{tag.name}</Text>
         <Text fontSize="xl" mt="sm">
-          {`tweet数: ${tag.tweets.length}`}
+          {`ブックマークした数: ${tag.tweets.length}`}
         </Text>
       </Div>
     </Button>

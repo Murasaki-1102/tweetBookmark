@@ -43,7 +43,7 @@ export const BottomSheet = () => {
       const initialSelectedTags = [...selectedTagsId];
       setSelectedTagsId([...(initialSelectedTags as string[])]);
     })();
-  }, [selectedTweet]);
+  }, [selectedTweet, tagList]);
 
   const handleChange = (id: string) => {
     const isSelected = selectTagsId.includes(id);

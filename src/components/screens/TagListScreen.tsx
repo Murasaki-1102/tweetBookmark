@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useContext, useEffect } from "react";
+import React, { FC, useCallback, useEffect } from "react";
 import { SafeAreaView, Alert } from "react-native";
 import { Div, Button, Icon, Text } from "react-native-magnus";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -6,18 +6,24 @@ import DraggableFlatList, {
   DragEndParams,
 } from "react-native-draggable-flatlist";
 import SwipeableItem from "react-native-swipeable-item";
-import { TagContext } from "../contexts/TagContext";
 import { RootStackParamList } from "../../types/navigation";
 import { TagButton } from "../organisms/TagButton";
 import { Tag } from "../../types/tag";
 import firebase from "../../lib/firebase";
+
+import {
+  useTagListAction,
+  useTagListState,
+} from "../../hooks/useTagList/useTagList";
 
 type TagListScreenProps = {
   navigation: DrawerNavigationProp<RootStackParamList, "TagList">;
 };
 
 export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
-  const { tags, setTags, getTags } = useContext(TagContext);
+  const { tagList } = useTagListState();
+  const { setTagList, getTagList, deleteTagById } = useTagListAction();
+
   const { currentUser } = firebase.auth();
 
   useEffect(() => {
@@ -35,8 +41,10 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
     });
   }, []);
 
+  console.log("TagList", deleteTagById);
+
   useEffect(() => {
-    getTags();
+    getTagList();
   }, []);
 
   const onPressModalOpen = () => {
@@ -54,13 +62,7 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
         text: "削除する",
         style: "destructive",
         onPress: () => {
-          firebase
-            .firestore()
-            .collection(`users/${currentUser?.uid}/tags`)
-            .doc(id)
-            .delete()
-            .then(() => callback())
-            .catch((error) => console.log(error));
+          deleteTagById(id, callback);
         },
       },
     ]);
@@ -70,7 +72,8 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
     const draggedTags: Tag[] = params.data.map((tag, index) => {
       return { ...tag, index };
     });
-    await setTags(draggedTags);
+    //これがないとチラつく
+    await setTagList(draggedTags);
     const batch = firebase.firestore().batch();
     const tagsDocRef = await firebase
       .firestore()
@@ -145,8 +148,11 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Div flex={1}>
+        <Button bg="blue300" onPress={getTagList}>
+          a
+        </Button>
         <DraggableFlatList
-          data={tags}
+          data={tagList}
           keyExtractor={(_, index) => `draggable-item-${index}`}
           ListHeaderComponent={
             <Button
