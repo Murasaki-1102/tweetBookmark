@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "0.1.10",
-    "@react-native-community/viewpager": "4.2.0",
     "@react-navigation/bottom-tabs": "^5.11.7",
     "@react-navigation/drawer": "^5.12.3",
     "@react-navigation/native": "^5.9.2",
@@ -49,6 +48,9 @@
     "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.63.2",
     "typescript": "~4.0.0"
+  },
+  "resolutions": {
+    "@react-native-community/viewpager": "^2.0.1"
   },
   "private": true
 }

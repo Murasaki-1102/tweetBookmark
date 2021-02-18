@@ -2,8 +2,10 @@ import React, { FC } from "react";
 import { TouchableHighlight } from "react-native";
 import { Div, Text, Button, Image, Icon } from "react-native-magnus";
 import { useBottomSheetAction } from "../../hooks/useBottomSheet/useBottomSheet";
+import { useModalAction } from "../../hooks/useModal/useModalState";
 import { useTagListState } from "../../hooks/useTagList/useTagList";
-import { TweetType } from "../../types/tweet";
+import { MediaType, TweetType } from "../../types/tweet";
+import { PhotoModal } from "./Modal/PhotoModal";
 
 type TweetProps = {
   tweet: TweetType;
@@ -16,6 +18,7 @@ const BottomSheetButton: FC<TweetProps> = ({ tweet }) => {
   const selectedTag: boolean = tagList.some(
     (tag) => tag.tweets.filter((t) => t.id_str === tweet.id_str).length
   );
+
   return (
     <Button
       py="none"
@@ -38,6 +41,42 @@ const BottomSheetButton: FC<TweetProps> = ({ tweet }) => {
         />
       )}
     </Button>
+  );
+};
+
+const PhotoList: FC<{ media: MediaType[] }> = ({ media }) => {
+  const { openModal } = useModalAction();
+
+  const photosLength = media.length;
+
+  const width = photosLength === 1 ? "100%" : "50%";
+  const imageHeight = photosLength === 1 || photosLength === 2 ? 240 : 120;
+  return (
+    <>
+      {media.map((photo, index) => (
+        <Button
+          key={index}
+          mt="lg"
+          bg="red300"
+          px={0}
+          h={imageHeight}
+          w={photosLength === 3 && index === 2 ? "100%" : width}
+          onPress={() =>
+            openModal(PhotoModal, {
+              photos: media,
+              index,
+            })
+          }
+        >
+          <Image
+            source={{ uri: photo.media_url_https }}
+            w="100%"
+            h={imageHeight}
+            resizeMode="cover"
+          />
+        </Button>
+      ))}
+    </>
   );
 };
 
@@ -89,6 +128,11 @@ export const Tweet: FC<TweetProps> = ({ tweet }) => {
 
             <Div mt="sm" pr="xl">
               <Text>{tweet.full_text}</Text>
+              {tweet.extended_entities?.media && (
+                <Div row flexWrap="wrap" w="100%">
+                  <PhotoList media={tweet.extended_entities.media} />
+                </Div>
+              )}
             </Div>
 
             <Div row mt="md">
