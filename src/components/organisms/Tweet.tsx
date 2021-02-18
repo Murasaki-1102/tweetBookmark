@@ -1,10 +1,49 @@
-import React, { useContext } from "react";
+import React, { FC, useContext } from "react";
 import { TouchableHighlight } from "react-native";
 import { Div, Text, Button, Image, Icon } from "react-native-magnus";
-import { TagContext } from "../contexts/TagContext";
+import { useBottomSheetAction } from "../../hooks/useBottomSheet/useBottomSheet";
+import { TweetType } from "../../types/tweet";
+import { TagListStateContext } from "../contexts/TagListContext";
 
-export const Tweet = () => {
-  const { openSelectTag } = useContext(TagContext);
+type TweetProps = {
+  tweet: TweetType;
+};
+
+const BottomSheetButton: FC<TweetProps> = ({ tweet }) => {
+  console.log("button");
+  const { openBottomSheet } = useBottomSheetAction();
+  const { tagList } = useContext(TagListStateContext);
+  const selectedTag: boolean = tagList.some(
+    (tag) => tag.tweets.filter((t) => t.id_str === tweet.id_str).length
+  );
+  return (
+    <Button
+      py="none"
+      onPress={() => {
+        openBottomSheet(tweet);
+      }}
+    >
+      {selectedTag ? (
+        <Icon
+          name="tag-plus"
+          fontFamily="MaterialCommunityIcons"
+          fontSize="2xl"
+          color="twitter"
+        />
+      ) : (
+        <Icon
+          name="tag-plus-outline"
+          fontFamily="MaterialCommunityIcons"
+          fontSize="2xl"
+        />
+      )}
+    </Button>
+  );
+};
+
+export const Tweet: FC<TweetProps> = ({ tweet }) => {
+  console.log("🚀 ~ file: Tweet.tsx ~ line 15 ~ openBottomSheet", tweet.id_str);
+
   return (
     <TouchableHighlight style={{ flex: 1 }}>
       <Div flex={1} w="100%" row borderBottomWidth={1} borderColor="selected">
@@ -23,34 +62,33 @@ export const Tweet = () => {
         <Div flex={0.77}>
           <Div py="md">
             <Div row alignItems="center" justifyContent="space-between">
-              <Div row>
-                <Text fontSize="xl" fontWeight="bold">
-                  murasaki
+              <Div row alignItems="center" flex={1}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  maxW="70%"
+                  numberOfLines={1}
+                >
+                  {tweet.user.displayName}
                 </Text>
-                <Text ml="md" color="gray600">
-                  @murasaki
+                <Text
+                  ml="xs"
+                  color="gray600"
+                  style={{ flexShrink: 1 }}
+                  numberOfLines={1}
+                >
+                  {`@${tweet.user.screenName}`}
                 </Text>
+
+                <Div ml="xs" style={{ flexShrink: 0 }}>
+                  <Text color="gray600">2021/2/13</Text>
+                </Div>
               </Div>
-              <Button py="none" onPress={openSelectTag}>
-                <Icon
-                  name="bookmark-border"
-                  fontFamily="MaterialIcons"
-                  fontSize="2xl"
-                />
-              </Button>
+              <BottomSheetButton tweet={tweet} />
             </Div>
 
             <Div mt="sm" pr="xl">
-              <Text>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Eveniet, odio? Rerum sequi ad quos, id aspernatur harum ipsa,
-                eius doloribus velit voluptatem nostrum, sint dolorem. Fugit
-                natus ratione excepturi quis! Lorem ipsum dolor, sit amet
-                consectetur adipisicing elit. Numquam veritatis quis expedita
-                perspiciatis alias tenetur quisquam deserunt cupiditate error
-                earum. Amet quibusdam consequatur eligendi! Obcaecati, ducimus
-                ad! Facilis, tempore cupiditate.
-              </Text>
+              <Text>{tweet.full_text}</Text>
             </Div>
 
             <Div row mt="md">
