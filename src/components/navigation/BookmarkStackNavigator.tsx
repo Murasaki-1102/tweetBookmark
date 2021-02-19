@@ -31,7 +31,7 @@ export const BookmarkStackNavigator = () => {
       }}
     >
       <Stack.Screen name="TagList" component={TagListScreen} />
-      <Stack.Screen name="Tag" component={TagScreen} />
+      <Stack.Screen name="TagDetail" component={TagScreen} />
       <Stack.Screen
         name="EditTheme"
         component={EditThemeScreen}

@@ -15,6 +15,8 @@ import {
   useTagListAction,
   useTagListState,
 } from "../../hooks/useTagList/useTagList";
+import { useModalAction } from "../../hooks/useModal/useModalState";
+import { EditTagModal } from "../organisms/Modal/EditTagModal";
 
 type TagListScreenProps = {
   navigation: DrawerNavigationProp<RootStackParamList, "TagList">;
@@ -23,6 +25,7 @@ type TagListScreenProps = {
 export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
   const { tagList } = useTagListState();
   const { setTagList, getTagList, deleteTagById } = useTagListAction();
+  const { openModal } = useModalAction();
 
   const { currentUser } = firebase.auth();
 
@@ -48,11 +51,11 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
   }, []);
 
   const onPressModalOpen = () => {
-    navigation.navigate("EditTagModal", {});
+    openModal(EditTagModal);
   };
 
   const onPressTag = (id: string) => {
-    navigation.navigate("Tag", { id });
+    navigation.navigate("TagDetail", { id });
   };
 
   const onPressDelete = async (id: string, callback: () => Promise<void>) => {
@@ -103,7 +106,7 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
               h="100%"
               rounded="none"
               onPress={() => {
-                navigation.navigate("EditTagModal", { id: item.id });
+                openModal(EditTagModal, { id: item.id });
                 close();
               }}
             >

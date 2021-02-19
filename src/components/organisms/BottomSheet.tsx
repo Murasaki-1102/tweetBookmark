@@ -9,6 +9,8 @@ import {
   TagListActionContext,
   TagListStateContext,
 } from "../contexts/TagListContext";
+import { useModalAction } from "../../hooks/useModal/useModalState";
+import { EditTagModal } from "./Modal/EditTagModal";
 
 export const BottomSheet = () => {
   const { selectedTweet, modalizeRef } = useBottomSheetState();
@@ -140,26 +142,29 @@ export const BottomSheet = () => {
     [selectTagsId]
   );
 
-  const ListFooterComponent = () => (
-    <Button
-      bg="selected"
-      alignSelf="center"
-      rounded="lg"
-      mt="lg"
-      onPress={() => navigate("EditTagModal", {})}
-      prefix={
-        <Icon
-          name="add"
-          fontFamily="MaterialIcons"
-          fontSize="xl"
-          rounded="md"
-          mr="md"
-        />
-      }
-    >
-      <Text>タグを作成する</Text>
-    </Button>
-  );
+  const ListFooterComponent = () => {
+    const { openModal } = useModalAction();
+    return (
+      <Button
+        bg="selected"
+        alignSelf="center"
+        rounded="lg"
+        mt="lg"
+        onPress={() => openModal(EditTagModal)}
+        prefix={
+          <Icon
+            name="add"
+            fontFamily="MaterialIcons"
+            fontSize="xl"
+            rounded="md"
+            mr="md"
+          />
+        }
+      >
+        <Text>タグを作成する</Text>
+      </Button>
+    );
+  };
 
   const HeaderComponent = () => (
     <Div
