@@ -56,10 +56,9 @@ const MediaList: FC<{ media: MediaType[] }> = ({ media }) => {
   return (
     <>
       {media.map((item, index) => (
-        <>
+        <React.Fragment key={index}>
           {item.type === "photo" ? (
             <Button
-              key={index}
               mt="lg"
               bg="red300"
               px={0}
@@ -81,7 +80,6 @@ const MediaList: FC<{ media: MediaType[] }> = ({ media }) => {
             </Button>
           ) : (
             <Video
-              key={index}
               source={{
                 uri: getHighestBitrateUrl(item?.video_info?.variants!),
               }}
@@ -93,7 +91,7 @@ const MediaList: FC<{ media: MediaType[] }> = ({ media }) => {
               useNativeControls
             />
           )}
-        </>
+        </React.Fragment>
       ))}
     </>
   );
@@ -112,8 +110,7 @@ export const Tweet: FC<TweetProps> = ({ tweet }) => {
             rounded="circle"
             mt="lg"
             source={{
-              uri:
-                "https://images.unsplash.com/photo-1593642532400-2682810df593?ixid=MXwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+              uri: tweet.user.profile_image_url_https.replace("_normal", ""),
             }}
           />
         </Div>
@@ -121,13 +118,8 @@ export const Tweet: FC<TweetProps> = ({ tweet }) => {
           <Div py="md">
             <Div row alignItems="center" justifyContent="space-between">
               <Div row alignItems="center" flex={1}>
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  maxW="70%"
-                  numberOfLines={1}
-                >
-                  {tweet.user.displayName}
+                <Text fontWeight="bold" maxW="70%" numberOfLines={1}>
+                  {tweet.user.name}
                 </Text>
                 <Text
                   ml="xs"
@@ -135,7 +127,7 @@ export const Tweet: FC<TweetProps> = ({ tweet }) => {
                   style={{ flexShrink: 1 }}
                   numberOfLines={1}
                 >
-                  {`@${tweet.user.screenName}`}
+                  {`@${tweet.user.screen_name}`}
                 </Text>
 
                 <Div ml="xs" style={{ flexShrink: 0 }}>

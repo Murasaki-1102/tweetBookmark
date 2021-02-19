@@ -37,7 +37,7 @@ export const ModalProvider: FC = ({ children }) => {
       openModal,
       closeModal,
     }),
-    []
+    [openModal, closeModal]
   );
 
   return (

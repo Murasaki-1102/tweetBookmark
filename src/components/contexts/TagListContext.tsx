@@ -104,11 +104,20 @@ export const TagListProvider: FC = ({ children }) => {
   //   }
   // };
 
+  const actions = useMemo(
+    () => ({
+      setTagList,
+      getTagList,
+      addTag,
+      updateTagById,
+      deleteTagById,
+    }),
+    [setTagList, getTagList, addTag, updateTagById, deleteTagById]
+  );
+
   return (
     <TagListStateContext.Provider value={{ tagList }}>
-      <TagListActionContext.Provider
-        value={{ setTagList, getTagList, addTag, updateTagById, deleteTagById }}
-      >
+      <TagListActionContext.Provider value={actions}>
         {children}
       </TagListActionContext.Provider>
     </TagListStateContext.Provider>

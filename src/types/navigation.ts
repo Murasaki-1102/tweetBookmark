@@ -1,7 +1,9 @@
+import { Tag } from "./tag";
+
 export type RootStackParamList = {
   Home: undefined;
   TagList: undefined;
-  TagDetail: { id: string };
+  TagDetail: { tag: Tag };
   Drawer: undefined;
   EditTheme: undefined;
 };

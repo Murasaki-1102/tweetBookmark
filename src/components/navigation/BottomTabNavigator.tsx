@@ -24,7 +24,7 @@ export const BottomTabNavigator = () => {
               name={route.name === "Home" ? "home-heart" : "bookmark-check"}
               fontFamily="MaterialCommunityIcons"
               color={focused ? "twitter" : "gray500"}
-              fontSize="6xl"
+              fontSize="4xl"
             />
           );
         },

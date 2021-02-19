@@ -38,8 +38,10 @@ export type TweetType = {
   // text?: string;
   full_text: string;
   user: {
-    displayName: string;
-    screenName: string;
+    name: string;
+    screen_name: string;
+    profile_image_url: string;
+    profile_image_url_https: string;
   };
   extended_entities?: {
     media?: MediaType[];

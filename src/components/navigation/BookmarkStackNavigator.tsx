@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator, Header } from "@react-navigation/stack";
 import { TagListScreen } from "../screens/TagListScreen";
 import { RootStackParamList } from "../../types/navigation";
-import { TagScreen } from "../screens/TagScreen";
+import { TagDetailScreen } from "../screens/TagDetailScreen";
 import { EditThemeScreen } from "../screens/EditThemeScreen";
 import { StatusBar, useTheme } from "react-native-magnus";
 
@@ -31,7 +31,7 @@ export const BookmarkStackNavigator = () => {
       }}
     >
       <Stack.Screen name="TagList" component={TagListScreen} />
-      <Stack.Screen name="TagDetail" component={TagScreen} />
+      <Stack.Screen name="TagDetail" component={TagDetailScreen} />
       <Stack.Screen
         name="EditTheme"
         component={EditThemeScreen}
