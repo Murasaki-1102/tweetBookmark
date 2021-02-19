@@ -1,11 +1,13 @@
 import React, { FC } from "react";
 import { TouchableHighlight } from "react-native";
 import { Div, Text, Button, Image, Icon } from "react-native-magnus";
+import { Video } from "expo-av";
 import { useBottomSheetAction } from "../../hooks/useBottomSheet/useBottomSheet";
 import { useModalAction } from "../../hooks/useModal/useModalState";
 import { useTagListState } from "../../hooks/useTagList/useTagList";
 import { MediaType, TweetType } from "../../types/tweet";
 import { PhotoModal } from "./Modal/PhotoModal";
+import { getHighestBitrateUrl } from "../../utils/twitter";
 
 type TweetProps = {
   tweet: TweetType;
@@ -44,7 +46,7 @@ const BottomSheetButton: FC<TweetProps> = ({ tweet }) => {
   );
 };
 
-const PhotoList: FC<{ media: MediaType[] }> = ({ media }) => {
+const MediaList: FC<{ media: MediaType[] }> = ({ media }) => {
   const { openModal } = useModalAction();
 
   const photosLength = media.length;
@@ -53,28 +55,45 @@ const PhotoList: FC<{ media: MediaType[] }> = ({ media }) => {
   const imageHeight = photosLength === 1 || photosLength === 2 ? 240 : 120;
   return (
     <>
-      {media.map((photo, index) => (
-        <Button
-          key={index}
-          mt="lg"
-          bg="red300"
-          px={0}
-          h={imageHeight}
-          w={photosLength === 3 && index === 2 ? "100%" : width}
-          onPress={() =>
-            openModal(PhotoModal, {
-              photos: media,
-              index,
-            })
-          }
-        >
-          <Image
-            source={{ uri: photo.media_url_https }}
-            w="100%"
-            h={imageHeight}
-            resizeMode="cover"
-          />
-        </Button>
+      {media.map((item, index) => (
+        <>
+          {item.type === "photo" ? (
+            <Button
+              key={index}
+              mt="lg"
+              bg="red300"
+              px={0}
+              h={imageHeight}
+              w={photosLength === 3 && index === 2 ? "100%" : width}
+              onPress={() =>
+                openModal(PhotoModal, {
+                  photos: media,
+                  index,
+                })
+              }
+            >
+              <Image
+                source={{ uri: item.media_url_https }}
+                w="100%"
+                h={imageHeight}
+                resizeMode="cover"
+              />
+            </Button>
+          ) : (
+            <Video
+              key={index}
+              source={{
+                uri: getHighestBitrateUrl(item?.video_info?.variants!),
+              }}
+              style={{ width: "100%", height: 180, marginTop: 12 }}
+              resizeMode="contain"
+              rate={1.0}
+              volume={1.0}
+              isMuted={false}
+              useNativeControls
+            />
+          )}
+        </>
       ))}
     </>
   );
@@ -130,7 +149,7 @@ export const Tweet: FC<TweetProps> = ({ tweet }) => {
               <Text>{tweet.full_text}</Text>
               {tweet.extended_entities?.media && (
                 <Div row flexWrap="wrap" w="100%">
-                  <PhotoList media={tweet.extended_entities.media} />
+                  <MediaList media={tweet.extended_entities.media} />
                 </Div>
               )}
             </Div>

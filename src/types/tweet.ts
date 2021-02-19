@@ -1,10 +1,16 @@
+export type VideoVariant = {
+  bitrate?: number;
+  content_type: "video/mp4" | "application/x-mpegURL";
+  url: string;
+};
+
 export type MediaType = {
   id: number;
   id_str: string;
   indices: number[];
   media_url: string;
   media_url_https: string;
-  type: "photo";
+  type: "photo" | "video";
   url: string;
   display_url: string;
   expanded_url: string;
@@ -13,6 +19,11 @@ export type MediaType = {
     large?: { w: number; h: number; resize: "fit" | "crop" };
     small?: { w: number; h: number; resize: "fit" | "crop" };
     thumb?: { w: number; h: number; resize: "fit" | "crop" };
+  };
+  video_info?: {
+    aspect_ratio: number[];
+    duration_millis: number;
+    variants: VideoVariant[];
   };
 };
 
