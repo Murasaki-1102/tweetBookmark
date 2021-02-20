@@ -28,7 +28,7 @@ export type MediaType = {
 };
 
 export type TweetType = {
-  // id: number;
+  id: number;
   id_str: string;
   created_at: Date;
   // favorite_count: number;

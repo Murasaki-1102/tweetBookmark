@@ -4,10 +4,6 @@ import {
   ModalStateContext,
 } from "../../components/contexts/ModalContext";
 
-export const useModalState = () => {
-  return useContext(ModalStateContext);
-};
+export const useModalState = () => useContext(ModalStateContext);
 
-export const useModalAction = () => {
-  return useContext(ModalActionContext);
-};
+export const useModalAction = () => useContext(ModalActionContext);

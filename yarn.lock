@@ -2146,6 +2146,13 @@
     invariant "^2.2.4"
     lodash "^4.5.0"
 
+"@welldone-software/why-did-you-render@^6.0.5":
+  version "6.0.5"
+  resolved "https://registry.yarnpkg.com/@welldone-software/why-did-you-render/-/why-did-you-render-6.0.5.tgz#a8df3509ed612770bb21b5fa0ad61634acc61f38"
+  integrity sha512-8fWib+bKoAmnJHZPU8/qpEXKG8piB3oaoKj78fXNAdYd3x8ryde1pC7D5tKff5Mart2iOJUvYNxxcYlbtT9tow==
+  dependencies:
+    lodash "^4"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -2577,6 +2584,11 @@ big-integer@^1.6.44:
   version "1.6.48"
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.48.tgz#8fd88bd1632cba4a1c8c3e3d7159f08bb95b4b9e"
   integrity sha512-j51egjPa7/i+RdiRuJbPdJ2FIUYYPhvYLjzoYbcMMm62ooO6F94fETG4MTs46zPAF9Brs04OajboA/qTGuz78w==
+
+bignumber.js@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.1.tgz#8d7ba124c882bfd8e43260c67475518d0689e4e5"
+  integrity sha512-IdZR9mh6ahOBv/hYGiXyVuyCetmGJhtYkqLBpTStdhEGjegpPlUawydyaF3pbIOFynJTpllEs+NP+CS9jKFLjA==
 
 bindings@^1.5.0:
   version "1.5.0"
@@ -5263,7 +5275,7 @@ lodash.toarray@^4.4.0:
   resolved "https://registry.yarnpkg.com/lodash.toarray/-/lodash.toarray-4.4.0.tgz#24c4bfcd6b2fba38bfd0594db1179d8e9b656561"
   integrity sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
 
-lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.0:
+lodash@^4, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.0:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
@@ -6638,6 +6650,11 @@ react-native-simple-twitter@^3.0.6:
   dependencies:
     crypto-js "^3.1.9-1"
     react-native-webview "^8.0.1"
+
+react-native-swipe-list-view@^3.2.6:
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/react-native-swipe-list-view/-/react-native-swipe-list-view-3.2.6.tgz#dde8f65dcdc24f50fafc05da9e90b139b1c3b185"
+  integrity sha512-FIrLzYjdxpMmD1hinP6bLSVS2eR2bhFdFuaqOJ+6/EuWDqZMBQcL4FLbkIwulMOc39JGdGZAxGExJYs7VKiQeQ==
 
 react-native-swipeable-item@^1.5.4:
   version "1.5.4"

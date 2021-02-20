@@ -4,10 +4,6 @@ import {
   TagListActionContext,
 } from "../../components/contexts/TagListContext";
 
-export const useTagListState = () => {
-  return useContext(TagListStateContext);
-};
+export const useTagListState = () => useContext(TagListStateContext);
 
-export const useTagListAction = () => {
-  return useContext(TagListActionContext);
-};
+export const useTagListAction = () => useContext(TagListActionContext);

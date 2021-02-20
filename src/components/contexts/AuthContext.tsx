@@ -1,27 +1,28 @@
-import React, { FC, useState, useEffect, createContext } from "react";
-import { useTwitter } from "react-native-simple-twitter";
-import { API_KEY, API_KEY_SECRET } from "@env";
+import React, { FC, useState, createContext } from "react";
+import { useTwitter } from "../../lib/react-native-simple-twitter";
 import firebase from "../../lib/firebase";
+import { User } from "../../types/user";
 
-type AuthContextValue = {
-  auth: () => Promise<void>;
-  TWModal: any;
-  getFavoriteTweets: any;
+type AuthStateContextValue = {
+  user: User | null;
 };
+export const AuthStateContext = createContext({} as AuthStateContextValue);
 
-export const AuthContext = createContext<AuthContextValue>(
-  {} as AuthContextValue
-);
+type AuthActionContextValue = {
+  auth: () => void;
+  TWModal: any;
+};
+export const AuthActionContext = createContext({} as AuthActionContextValue);
 
 export const AuthProvider: FC = ({ children }) => {
-  const [oauthToken, setOauthToken] = useState({});
+  const [user, setUser] = useState<User | null>(null);
+
   const { twitter, TWModal } = useTwitter({
     onSuccess: async (user, accessToken) => {
-      await twitter.setAccessToken(
+      twitter.setAccessToken(
         accessToken.oauth_token,
         accessToken.oauth_token_secret
       );
-      await setOauthToken({ oauthToken });
       const credential = firebase.auth.TwitterAuthProvider.credential(
         accessToken.oauth_token,
         accessToken.oauth_token_secret
@@ -30,50 +31,42 @@ export const AuthProvider: FC = ({ children }) => {
         .auth()
         .signInWithCredential(credential)
         .then(async (result) => {
-          console.log(result);
           const userDocument = await firebase
             .firestore()
             .collection("users")
             .doc(result.user?.uid)
             .get();
           if (!userDocument.exists) {
-            await firebase
-              .firestore()
-              .collection("users")
-              .doc(result.user?.uid)
-              .set({
-                uid: result.user?.uid,
-                name: result.user?.displayName,
-                screenName: result.additionalUserInfo?.username,
-                photoUrl: result.user?.photoURL,
-              });
+            firebase.firestore().collection("users").doc(result.user?.uid).set({
+              uid: result.user?.uid,
+              name: result.user?.displayName,
+              screenName: result.additionalUserInfo?.username,
+              photoUrl: result.user?.photoURL,
+            });
           }
+          setUser({
+            uid: result.user?.uid!,
+            name: result.user?.displayName!,
+            screenName: result.additionalUserInfo?.username!,
+            photoUrl: result.user?.photoURL!,
+          });
         });
     },
   });
 
-  const auth = async () => {
+  const auth = () => {
     try {
-      await twitter.login();
+      twitter.login();
     } catch (e) {
       console.log(e.errors);
     }
   };
 
-  useEffect(() => {
-    twitter.setConsumerKey(API_KEY, API_KEY_SECRET);
-  }, []);
-
-  const getFavoriteTweets = async () => {
-    // const hoge = await twitter.get("favorites/list.json", {
-    //   count: 100,
-    //   tweet_mode: "extended",
-    // });
-  };
-
   return (
-    <AuthContext.Provider value={{ auth, TWModal, getFavoriteTweets }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthStateContext.Provider value={{ user }}>
+      <AuthActionContext.Provider value={{ auth, TWModal }}>
+        {children}
+      </AuthActionContext.Provider>
+    </AuthStateContext.Provider>
   );
 };

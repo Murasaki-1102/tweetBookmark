@@ -1,7 +1,7 @@
 import React from "react";
 import { createStackNavigator, Header } from "@react-navigation/stack";
 import { HomeScreen } from "../screens/HomeScreen";
-import { StatusBar, useTheme } from "react-native-magnus";
+import { StatusBar, useTheme, Icon } from "react-native-magnus";
 import { EditThemeScreen } from "../screens/EditThemeScreen";
 
 const Stack = createStackNavigator();
@@ -27,6 +27,16 @@ export const HomeStackNavigator = () => {
             <Header {...props} />
           </>
         ),
+        headerBackImage: () => (
+          <Icon
+            name="arrow-back-ios"
+            fontFamily="MaterialIcons"
+            fontSize="4xl"
+            color="twitter"
+            ml="lg"
+          />
+        ),
+        headerBackTitleVisible: false,
       }}
     >
       <Stack.Screen name="Home" component={HomeScreen} />
