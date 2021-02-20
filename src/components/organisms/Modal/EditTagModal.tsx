@@ -105,6 +105,7 @@ export const EditTagModal: FC<EditTagModalProps> = ({ id }) => {
               textAlign="center"
               borderBottomWidth={1}
               bg="body"
+              color="text"
               w="70%"
               fontSize="2xl"
               autoCapitalize="none"

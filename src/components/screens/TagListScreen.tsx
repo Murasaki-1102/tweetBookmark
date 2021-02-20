@@ -24,7 +24,7 @@ type TagListScreenProps = {
 
 export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
   const { tagList } = useTagListState();
-  const { setTagList, getTagList, deleteTagById } = useTagListAction();
+  const { setTagList, deleteTagById } = useTagListAction();
   const { openModal } = useModalAction();
 
   const { currentUser } = firebase.auth();
@@ -44,18 +44,14 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
     });
   }, []);
 
-  console.log("TagList", deleteTagById);
-
-  useEffect(() => {
-    getTagList();
-  }, []);
+  console.log("TagList");
 
   const onPressModalOpen = () => {
     openModal(EditTagModal);
   };
 
-  const onPressTag = (id: string) => {
-    navigation.navigate("TagDetail", { id });
+  const onPressTag = (tag: Tag) => {
+    navigation.navigate("TagDetail", { tag });
   };
 
   const onPressDelete = async (id: string, callback: () => Promise<void>) => {
@@ -140,7 +136,7 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
       >
         <TagButton
           tag={item}
-          onPress={() => onPressTag(item.id)}
+          onPress={() => onPressTag(item)}
           onLongPress={drag}
         />
       </SwipeableItem>
@@ -148,40 +144,42 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
     []
   );
 
+  const ListHeaderComponent = useCallback(
+    () => (
+      <Button
+        flex={1}
+        maxH={80}
+        block
+        rounded="none"
+        justifyContent="flex-start"
+        borderBottomWidth={1}
+        borderColor="selected"
+        prefix={
+          <Icon
+            name="add"
+            fontFamily="MaterialIcons"
+            fontSize="6xl"
+            bg="selected"
+            rounded="md"
+            p={12}
+            mr="lg"
+          />
+        }
+        onPress={onPressModalOpen}
+      >
+        <Text fontSize="2xl">タグを作成</Text>
+      </Button>
+    ),
+    []
+  );
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Div flex={1}>
-        <Button bg="blue300" onPress={getTagList}>
-          a
-        </Button>
         <DraggableFlatList
           data={tagList}
           keyExtractor={(_, index) => `draggable-item-${index}`}
-          ListHeaderComponent={
-            <Button
-              flex={1}
-              maxH={80}
-              block
-              rounded="none"
-              justifyContent="flex-start"
-              borderBottomWidth={1}
-              borderColor="selected"
-              prefix={
-                <Icon
-                  name="add"
-                  fontFamily="MaterialIcons"
-                  fontSize="6xl"
-                  bg="selected"
-                  rounded="md"
-                  p={12}
-                  mr="lg"
-                />
-              }
-              onPress={onPressModalOpen}
-            >
-              <Text fontSize="2xl">タグを作成</Text>
-            </Button>
-          }
+          ListHeaderComponent={ListHeaderComponent}
           renderItem={renderItem}
           onDragEnd={onDragEnd}
           activationDistance={20}
