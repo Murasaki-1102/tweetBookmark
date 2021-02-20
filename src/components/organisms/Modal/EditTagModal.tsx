@@ -12,9 +12,10 @@ import { useModalAction } from "../../../hooks/useModal/useModalState";
 
 type EditTagModalProps = {
   id?: string;
+  isVisible: boolean;
 };
 
-export const EditTagModal: FC<EditTagModalProps> = ({ id }) => {
+export const EditTagModal: FC<EditTagModalProps> = ({ id, isVisible }) => {
   console.log("🚀 ~ file: EditTagModal.tsx ~ line 21 ~ id");
   const { tagList } = useTagListState();
   const { addTag, updateTagById } = useTagListAction();
@@ -45,7 +46,7 @@ export const EditTagModal: FC<EditTagModalProps> = ({ id }) => {
 
   return (
     <Modal
-      isVisible
+      isVisible={isVisible}
       style={{ margin: 0 }}
       onSwipeComplete={closeModal}
       swipeDirection="down"

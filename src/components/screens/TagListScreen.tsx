@@ -47,7 +47,7 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
   console.log("TagList");
 
   const onPressModalOpen = () => {
-    openModal(EditTagModal);
+    openModal(EditTagModal, { isVisible: true });
   };
 
   const onPressTag = (tag: Tag) => {
@@ -102,7 +102,7 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
               h="100%"
               rounded="none"
               onPress={() => {
-                openModal(EditTagModal, { id: item.id });
+                openModal(EditTagModal, { id: item.id, isVisible: true });
                 close();
               }}
             >

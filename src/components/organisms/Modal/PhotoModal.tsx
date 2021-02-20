@@ -1,72 +1,73 @@
 import React, { FC } from "react";
-import { SafeAreaView, View } from "react-native";
-import { Button, Icon, Image, useTheme } from "react-native-magnus";
-import Modal from "react-native-modal";
-import ViewPager from "@react-native-community/viewpager";
+import { SafeAreaView } from "react-native";
+import {
+  Div,
+  Button,
+  Icon,
+  useTheme,
+  Text,
+  StatusBar,
+} from "react-native-magnus";
+import ImageView from "react-native-image-viewing";
 import { useModalAction } from "../../../hooks/useModal/useModalState";
 import { MediaType } from "../../../types/tweet";
 
 type PhotoModalProps = {
   photos: MediaType[];
   index: number;
+  isVisible: boolean;
 };
 
-export const PhotoModal: FC<PhotoModalProps> = ({ photos, index }) => {
+export const PhotoModal: FC<PhotoModalProps> = ({
+  photos,
+  index,
+  isVisible,
+}) => {
   console.log("🚀 ~ file: PhotoModalScreen.tsx ~ line 21 ~ id");
   const { closeModal } = useModalAction();
   const { theme } = useTheme();
+  const images = photos.map((photo) => ({ uri: photo.media_url_https }));
 
-  return (
-    <Modal
-      isVisible
-      animationIn="zoomIn"
-      onSwipeComplete={closeModal}
-      swipeDirection="down"
-      onBackdropPress={closeModal}
-      useNativeDriver={true}
-      style={{ margin: 0 }}
-    >
-      <SafeAreaView
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          backgroundColor: theme.colors?.gray900,
-        }}
-      >
+  const HeaderComponent = () => (
+    <>
+      <SafeAreaView />
+      <Div bg="gray900">
         <Button
-          bg="gray400"
-          h={40}
-          w={40}
-          position="absolute"
-          top={60}
-          right={20}
+          alignSelf="flex-end"
           rounded="circle"
+          bg="gray800"
+          m="lg"
           onPress={closeModal}
-          zIndex={9999}
         >
-          <Icon color="gray800" name="close" />
+          <Icon
+            name="close"
+            fontFamily="MaterialCommunityIcons"
+            fontSize="xl"
+          />
         </Button>
-        <ViewPager
-          initialPage={index}
-          style={{ flex: 1 }}
-          pageMargin={12}
-          showPageIndicator
-        >
-          {photos.map((photo, index) => (
-            <View
-              key={index}
-              style={{ backgroundColor: theme.colors?.gray900 }}
-            >
-              <Image
-                source={{ uri: photo.media_url_https }}
-                h="100%"
-                w="100%"
-                resizeMode="contain"
-              />
-            </View>
-          ))}
-        </ViewPager>
-      </SafeAreaView>
-    </Modal>
+      </Div>
+    </>
+  );
+
+  const FooterComponent = ({ imageIndex }: { imageIndex: number }) => (
+    <>
+      <StatusBar barStyle="light-content" />
+      <Div h={80} bg="gray900" justifyContent="center" alignItems="center">
+        <Text color="white">{`${imageIndex + 1} / ${images.length}`}</Text>
+      </Div>
+      <SafeAreaView />
+    </>
+  );
+  return (
+    <ImageView
+      images={images}
+      imageIndex={index}
+      visible={isVisible}
+      onRequestClose={closeModal}
+      swipeToCloseEnabled
+      backgroundColor={theme.colors?.gray900}
+      HeaderComponent={HeaderComponent}
+      FooterComponent={FooterComponent}
+    />
   );
 };

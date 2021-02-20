@@ -131,7 +131,7 @@ export const BottomSheet = () => {
         alignSelf="center"
         rounded="lg"
         mt="lg"
-        onPress={() => openModal(EditTagModal)}
+        onPress={() => openModal(EditTagModal, { isVisible: true })}
         prefix={
           <Icon
             name="add"

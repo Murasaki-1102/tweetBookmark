@@ -67,6 +67,7 @@ const MediaList: FC<{ media: MediaType[] }> = ({ media }) => {
                 openModal(PhotoModal, {
                   photos: media,
                   index,
+                  isVisible: true,
                 })
               }
             >

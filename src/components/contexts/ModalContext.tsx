@@ -25,12 +25,18 @@ export const ModalProvider: FC = ({ children }) => {
   });
 
   const openModal = useCallback((modalComponent: FC<any>, modalProps?: any) => {
-    setModalState({ modalComponent, modalProps });
+    setModalState({
+      modalComponent,
+      modalProps,
+    });
   }, []);
 
   const closeModal = useCallback(() => {
-    setModalState({ modalComponent: null, modalProps: {} });
-  }, []);
+    setModalState({
+      ...modalState,
+      modalProps: { ...modalState.modalProps, isVisible: false },
+    });
+  }, [modalState]);
 
   const actions = useMemo(
     () => ({
