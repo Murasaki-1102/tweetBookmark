@@ -1,6 +1,6 @@
 import React, { FC, useState, useCallback, useEffect } from "react";
 import { SafeAreaView } from "react-native";
-import { Div, Button, Icon, Input } from "react-native-magnus";
+import { Div, Button, Icon } from "react-native-magnus";
 import { ThemeSwitcher } from "../atoms/ThemeSwitcher";
 import { RootStackParamList } from "../../types/navigation";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -9,6 +9,7 @@ import { TweetType } from "../../types/tweet";
 import { TweetList } from "../organisms/TweetList";
 import { useAuthAction } from "../../hooks/useAuth/useAuth";
 import { useTwitter } from "../../lib/react-native-simple-twitter";
+import { SearchInput } from "../molecules/SearchInput";
 
 type HomeScreenProps = {
   navigation: DrawerNavigationProp<RootStackParamList, "Home">;
@@ -162,17 +163,7 @@ export const HomeScreen: FC<HomeScreenProps> = ({
             more
           </Button>
         </Div>
-        <Input
-          // textAlign="center"
-          borderBottomWidth={1}
-          placeholder="キーワード検索"
-          autoCapitalize="none"
-          prefix={
-            <Icon name="search" fontFamily="MaterialIcons" fontSize="2xl" />
-          }
-          value={keyword}
-          onChangeText={filterTweetByKeyword}
-        />
+        <SearchInput value={keyword} onChangeText={filterTweetByKeyword} />
         <TweetList tweets={tweets.all} onEndReached={onEndReached} />
       </Div>
 

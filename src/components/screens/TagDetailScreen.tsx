@@ -2,11 +2,12 @@ import React, { FC, useState, useEffect, useCallback } from "react";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { LogBox, SafeAreaView } from "react-native";
-import { Div, Input, Icon } from "react-native-magnus";
+import { Div } from "react-native-magnus";
 import { RootStackParamList } from "../../types/navigation";
 import { TweetList } from "../organisms/TweetList";
 import firebase from "../../lib/firebase";
 import { TweetType } from "../../types/tweet";
+import { SearchInput } from "../molecules/SearchInput";
 
 type TagDetailScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, "TagDetail">;
@@ -69,15 +70,7 @@ export const TagDetailScreen: FC<TagDetailScreenProps> = ({
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Div flex={1}>
-        <Input
-          borderBottomWidth={1}
-          placeholder="キーワード検索"
-          autoCapitalize="none"
-          prefix={
-            <Icon name="search" fontFamily="MaterialIcons" fontSize="2xl" />
-          }
-          onChangeText={filterTweetByKeyword}
-        />
+        <SearchInput onChangeText={filterTweetByKeyword} />
         <TweetList tweets={tweets.all} tag={tag} />
       </Div>
     </SafeAreaView>
