@@ -1,50 +1,35 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { SafeAreaView } from "react-native";
 import { Button, Text, Div, Icon, useTheme } from "react-native-magnus";
 import { Modalize } from "react-native-modalize";
 import { Tag } from "../../types/tag";
 import firebase from "../../lib/firebase";
 import { useBottomSheetState } from "../../hooks/useBottomSheet/useBottomSheet";
-import {
-  TagListActionContext,
-  TagListStateContext,
-} from "../contexts/TagListContext";
 import { useModalAction } from "../../hooks/useModal/useModalState";
 import { EditTagModal } from "./Modal/EditTagModal";
+import { useTagListState } from "../../hooks/useTagList/useTagList";
 
 export const BottomSheet = () => {
-  const { selectedTweet, modalizeRef } = useBottomSheetState();
-  const { tagList } = useContext(TagListStateContext);
-  const { getTagList } = useContext(TagListActionContext);
-
-  console.log(
-    "🚀 ~ file: BottomSheet.tsx ~ line 16 ~ BottomSheet ~ selectedTweet"
-  );
-
   const [selectTagsId, setSelectedTagsId] = useState<string[]>([]);
+  const { tagList } = useTagListState();
 
+  console.log("🚀 ~ file: BottomSheet.tsx ~ line 16 ~ BottomSheet");
+
+  const { selectedTweet, modalizeRef } = useBottomSheetState();
   const { theme } = useTheme();
-  const { navigate } = useNavigation();
 
   useEffect(() => {
-    (async () => {
-      if (!tagList.length) getTagList();
-      const filteredHasTweetTagsId = tagList.filter(
-        (t) => t.tweets.length !== 0
-      );
-      const selectedTagsId = filteredHasTweetTagsId
-        .map((t) => {
-          if (
-            t.tweets.filter((t) => t.id_str === selectedTweet.id_str).length
-          ) {
-            return t.id;
-          }
-        })
-        .filter((id) => id !== undefined);
+    const filteredHasTweetTagsId = tagList.filter((t) => t.tweets.length !== 0);
+    const selectedTagsId = filteredHasTweetTagsId
+      .map((t) => {
+        if (t.tweets.filter((t) => t.id_str === selectedTweet.id_str).length) {
+          return t.id;
+        }
+      })
+      .filter((id) => id !== undefined);
 
-      const initialSelectedTags = [...selectedTagsId];
-      setSelectedTagsId([...(initialSelectedTags as string[])]);
-    })();
+    const initialSelectedTags = [...selectedTagsId];
+    setSelectedTagsId([...(initialSelectedTags as string[])]);
   }, [selectedTweet, tagList]);
 
   const handleChange = (id: string) => {
@@ -81,13 +66,9 @@ export const BottomSheet = () => {
 
       await tagsDocRef.docs.map((tag) => {
         if (true) {
-          batch.set(
-            tag.ref,
-            {
-              tweets: [...tag.data().tweets, selectedTweet],
-            },
-            { merge: true }
-          );
+          batch.update(tag.ref, {
+            tweets: firebase.firestore.FieldValue.arrayUnion(selectedTweet),
+          });
         }
       });
       db.collection(`users/${currentUser.uid}/tweets`)
@@ -142,7 +123,7 @@ export const BottomSheet = () => {
     [selectTagsId]
   );
 
-  const ListFooterComponent = () => {
+  const ListFooterComponent = useCallback(() => {
     const { openModal } = useModalAction();
     return (
       <Button
@@ -164,7 +145,7 @@ export const BottomSheet = () => {
         <Text>タグを作成する</Text>
       </Button>
     );
-  };
+  }, []);
 
   const HeaderComponent = () => (
     <Div
@@ -196,11 +177,14 @@ export const BottomSheet = () => {
       >
         追加する
       </Button>
+      <SafeAreaView />
     </Div>
   );
 
   const keyExtractor = useCallback((_, index) => index.toString(), []);
-
+  const style = useMemo(() => ({ backgroundColor: theme.colors?.body }), [
+    theme,
+  ]);
   return (
     <Modalize
       ref={modalizeRef}
@@ -209,9 +193,7 @@ export const BottomSheet = () => {
         renderItem,
         ListFooterComponent,
         keyExtractor,
-        style: {
-          backgroundColor: theme.colors?.body,
-        },
+        style,
       }}
       HeaderComponent={HeaderComponent}
       FooterComponent={FooterComponent}

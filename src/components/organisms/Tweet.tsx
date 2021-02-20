@@ -14,7 +14,6 @@ type TweetProps = {
 };
 
 const BottomSheetButton: FC<TweetProps> = ({ tweet }) => {
-  console.log("button");
   const { openBottomSheet } = useBottomSheetAction();
   const { tagList } = useTagListState();
   const selectedTag: boolean = tagList.some(
@@ -98,7 +97,7 @@ const MediaList: FC<{ media: MediaType[] }> = ({ media }) => {
 };
 
 export const Tweet: FC<TweetProps> = ({ tweet }) => {
-  console.log("🚀 ~ file: Tweet.tsx ~ line 15 ~ openBottomSheet", tweet.id_str);
+  console.log("🚀 ~ file: Tweet.tsx ~ line 15");
 
   return (
     <TouchableHighlight style={{ flex: 1 }}>
