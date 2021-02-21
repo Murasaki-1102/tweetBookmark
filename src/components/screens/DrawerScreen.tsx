@@ -3,7 +3,8 @@ import { SafeAreaView, Alert } from "react-native";
 import { Div, Button, Image, Text, Icon, useTheme } from "react-native-magnus";
 import { drawerMenu } from "../../constants/drawerMenu";
 import { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
-import { useAuthAction } from "../../hooks/useAuth/useAuth";
+import { useAuthAction, useAuthState } from "../../hooks/useAuth/useAuth";
+import { getHighestImageQualityUrl } from "../../utils/twitter";
 
 type DrawerScreenProps = {
   navigation: DrawerNavigationHelpers;
@@ -12,6 +13,7 @@ type DrawerScreenProps = {
 export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
   const { theme } = useTheme();
   console.log("🚀 ~ file: DrawerScreen.tsx ~ line 13 ~ theme");
+  const { user } = useAuthState();
   const { auth, TWModal, logout } = useAuthAction();
 
   const onPressLogout = () => {
@@ -41,15 +43,14 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
             w={50}
             rounded="circle"
             source={{
-              uri:
-                "https://images.unsplash.com/photo-1593642532400-2682810df593?ixid=MXwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+              uri: getHighestImageQualityUrl(user?.photoUrl!),
             }}
           />
           <Text mt="lg" fontWeight="bold" fontSize="xl">
-            むらさき
+            {user?.name}
           </Text>
           <Text mt="xs" color="gray600">
-            @hogehoge
+            {`@${user?.screenName}`}
           </Text>
         </Div>
 

@@ -7,7 +7,10 @@ import { useModalAction } from "../../hooks/useModal/useModalState";
 import { useTagListState } from "../../hooks/useTagList/useTagList";
 import { MediaType, TweetType } from "../../types/tweet";
 import { PhotoModal } from "./Modal/PhotoModal";
-import { getHighestBitrateUrl } from "../../utils/twitter";
+import {
+  getHighestBitrateUrl,
+  getHighestImageQualityUrl,
+} from "../../utils/twitter";
 import { yyyyMMdd } from "../../lib/date-fns";
 
 type TweetProps = {
@@ -111,7 +114,9 @@ export const Tweet: FC<TweetProps> = ({ tweet }) => {
             rounded="circle"
             mt="lg"
             source={{
-              uri: tweet.user.profile_image_url_https.replace("_normal", ""),
+              uri: getHighestImageQualityUrl(
+                tweet.user.profile_image_url_https
+              ),
             }}
           />
         </Div>
