@@ -6,6 +6,7 @@ import { TweetType } from "../../types/tweet";
 import { Tweet } from "./Tweet";
 import firebase from "../../lib/firebase";
 import { Tag } from "../../types/tag";
+import { useAuthState } from "../../hooks/useAuth/useAuth";
 
 type TweetListProps = {
   tweets: TweetType[];
@@ -27,46 +28,43 @@ const SwipeableTweetList: FC<SwipeableTweetListProps> = ({
   keyExtractor,
   renderItem,
 }) => {
+  const { user } = useAuthState();
   const onDeleteTweet = async (tweet: TweetType) => {
     // FIX
-    const { currentUser } = firebase.auth();
-    if (currentUser) {
-      const db = firebase.firestore();
-      const batch = db.batch();
 
-      const tweetDoc = db
-        .collection(`users/${currentUser.uid}/tweets`)
-        .doc(tweet.id_str);
+    const db = firebase.firestore();
+    // const batch = db.batch();
 
-      await tweetDoc.update({
-        tagsId: firebase.firestore.FieldValue.arrayRemove(tag?.id),
-      });
+    const tweetDoc = db
+      .collection(`users/${user?.uid}/tweets`)
+      .doc(tweet.id_str);
 
-      tweetDoc.get().then((doc) => {
-        if (!doc.data()?.tagsId.length) {
-          tweetDoc.delete();
-        }
-      });
+    await tweetDoc.update({
+      tagsId: firebase.firestore.FieldValue.arrayRemove(tag?.id),
+    });
 
-      const tagDoc = db
-        .collection(`users/${currentUser.uid}/tags`)
-        .doc(tag?.id);
-      await tagDoc.update({
-        tweets: firebase.firestore.FieldValue.arrayRemove(tweet),
-      });
+    tweetDoc.get().then((doc) => {
+      if (!doc.data()?.tagsId.length) {
+        tweetDoc.delete();
+      }
+    });
 
-      const tagsTweetDoc = db
-        .collection(`users/${currentUser.uid}/tags/${tag?.id}/tweets`)
-        .doc(tweet.id_str);
+    const tagDoc = db.collection(`users/${user?.uid}/tags`).doc(tag?.id);
+    await tagDoc.update({
+      tweets: firebase.firestore.FieldValue.arrayRemove(tweet),
+    });
 
-      await tagsTweetDoc.delete();
+    const tagsTweetDoc = db
+      .collection(`users/${user?.uid}/tags/${tag?.id}/tweets`)
+      .doc(tweet.id_str);
 
-      // tagsTweetDoc.get().then((doc) => {
-      //   if (!doc.data()?.tagsId.length) {
-      //     tagsTweetDoc.delete();
-      //   }
-      // });
-    }
+    await tagsTweetDoc.delete();
+
+    // tagsTweetDoc.get().then((doc) => {
+    //   if (!doc.data()?.tagsId.length) {
+    //     tagsTweetDoc.delete();
+    //   }
+    // });
   };
 
   const renderHiddenItem = useCallback(
@@ -132,7 +130,6 @@ export const TweetList: FC<TweetListProps> = ({
           data={tweets}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
-          // ListEmptyComponent={<ActivityIndicator />}
           onEndReached={onEndReached}
         />
       )}

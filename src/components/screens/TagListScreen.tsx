@@ -17,6 +17,7 @@ import {
 } from "../../hooks/useTagList/useTagList";
 import { useModalAction } from "../../hooks/useModal/useModalState";
 import { EditTagModal } from "../organisms/Modal/EditTagModal";
+import { useAuthState } from "../../hooks/useAuth/useAuth";
 
 type TagListScreenProps = {
   navigation: DrawerNavigationProp<RootStackParamList, "TagList">;
@@ -26,8 +27,7 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
   const { tagList } = useTagListState();
   const { setTagList, deleteTagById } = useTagListAction();
   const { openModal } = useModalAction();
-
-  const { currentUser } = firebase.auth();
+  const { user } = useAuthState();
 
   useEffect(() => {
     navigation.setOptions({
@@ -76,7 +76,7 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
     const batch = firebase.firestore().batch();
     const tagsDocRef = await firebase
       .firestore()
-      .collection(`users/${currentUser?.uid}/tags`)
+      .collection(`users/${user?.uid}/tags`)
       .get();
     await tagsDocRef.docs.map((tag) => {
       const afterIndex = draggedTags.find(

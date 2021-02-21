@@ -8,6 +8,7 @@ import { useBottomSheetState } from "../../hooks/useBottomSheet/useBottomSheet";
 import { useModalAction } from "../../hooks/useModal/useModalState";
 import { EditTagModal } from "./Modal/EditTagModal";
 import { useTagListState } from "../../hooks/useTagList/useTagList";
+import { useAuthState } from "../../hooks/useAuth/useAuth";
 
 export const BottomSheet = () => {
   const [selectTagsId, setSelectedTagsId] = useState<string[]>([]);
@@ -16,6 +17,7 @@ export const BottomSheet = () => {
   console.log("🚀 ~ file: BottomSheet.tsx ~ line 16 ~ BottomSheet");
 
   const { selectedTweet, modalizeRef } = useBottomSheetState();
+  const { user } = useAuthState();
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -42,45 +44,40 @@ export const BottomSheet = () => {
   };
 
   const onSubmit = async () => {
-    const { currentUser } = firebase.auth();
-    if (currentUser) {
-      const db = firebase.firestore();
-      const batch = db.batch();
-      const tagsDocRefs = selectTagsId.map((tagId) =>
-        firebase
-          .firestore()
-          .collection(`users/${currentUser.uid}/tags/${tagId}/tweets`)
-      );
-      await tagsDocRefs.forEach((tagsDocRef) =>
-        tagsDocRef.doc(selectedTweet.id_str).set({
-          tweet: selectedTweet,
-          tagsId: selectTagsId,
-          createdAt: new Date(),
-        })
-      );
-      const tagsDocRef = await firebase
-        .firestore()
-        .collection(`users/${currentUser.uid}/tags`)
-        .where(firebase.firestore.FieldPath.documentId(), "in", selectTagsId)
-        .get();
+    const db = firebase.firestore();
+    const batch = db.batch();
+    const tagsDocRefs = selectTagsId.map((tagId) =>
+      firebase.firestore().collection(`users/${user?.uid}/tags/${tagId}/tweets`)
+    );
+    await tagsDocRefs.forEach((tagsDocRef) =>
+      tagsDocRef.doc(selectedTweet.id_str).set({
+        tweet: selectedTweet,
+        tagsId: selectTagsId,
+        createdAt: new Date(),
+      })
+    );
+    const tagsDocRef = await firebase
+      .firestore()
+      .collection(`users/${user?.uid}/tags`)
+      .where(firebase.firestore.FieldPath.documentId(), "in", selectTagsId)
+      .get();
 
-      await tagsDocRef.docs.map((tag) => {
-        if (true) {
-          batch.update(tag.ref, {
-            tweets: firebase.firestore.FieldValue.arrayUnion(selectedTweet),
-          });
-        }
-      });
-      db.collection(`users/${currentUser.uid}/tweets`)
-        .doc(selectedTweet.id_str)
-        .set({
-          tweet: selectedTweet,
-          tagsId: selectTagsId,
-          createdAt: new Date(),
-        })
-        .catch((error) => console.log(error));
-      await batch.commit();
-    }
+    await tagsDocRef.docs.map((tag) => {
+      if (true) {
+        batch.update(tag.ref, {
+          tweets: firebase.firestore.FieldValue.arrayUnion(selectedTweet),
+        });
+      }
+    });
+    db.collection(`users/${user?.uid}/tweets`)
+      .doc(selectedTweet.id_str)
+      .set({
+        tweet: selectedTweet,
+        tagsId: selectTagsId,
+        createdAt: new Date(),
+      })
+      .catch((error) => console.log(error));
+    await batch.commit();
 
     modalizeRef.current?.close();
   };

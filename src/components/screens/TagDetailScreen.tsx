@@ -8,6 +8,7 @@ import { TweetList } from "../organisms/TweetList";
 import firebase from "../../lib/firebase";
 import { TweetType } from "../../types/tweet";
 import { SearchInput } from "../molecules/SearchInput";
+import { useAuthState } from "../../hooks/useAuth/useAuth";
 
 type TagDetailScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, "TagDetail">;
@@ -23,6 +24,7 @@ export const TagDetailScreen: FC<TagDetailScreenProps> = ({
     tmp: [] as TweetType[],
   });
   const { tag } = route.params;
+  const { user } = useAuthState();
   console.log("🚀 ~ file: TagDetailScreen.tsx ~ line 19 ~ tag");
   // const { tagList } = useTagListState();
   //Non-serializable対策
@@ -36,11 +38,10 @@ export const TagDetailScreen: FC<TagDetailScreenProps> = ({
   }, [tag.name]);
 
   useEffect(() => {
-    const { currentUser } = firebase.auth();
     let unsubscribe = () => {};
     unsubscribe = firebase
       .firestore()
-      .collection(`users/${currentUser?.uid}/tags/${tag.id}/tweets`)
+      .collection(`users/${user?.uid}/tags/${tag.id}/tweets`)
       .orderBy("createdAt", "desc")
       .onSnapshot(
         (snapshot) => {

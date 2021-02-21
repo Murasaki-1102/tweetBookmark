@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { Tag } from "../../types/tag";
 import firebase from "../../lib/firebase";
+import { useAuthState } from "../../hooks/useAuth/useAuth";
 
 type TagListStateContextValue = {
   tagList: Tag[];
@@ -30,11 +31,11 @@ export const TagListActionContext = createContext(
 
 export const TagListProvider: FC = ({ children }) => {
   const [tagList, setTagList] = useState<Tag[]>([]);
+  const { user } = useAuthState();
 
-  const { currentUser } = firebase.auth();
   const collection = useMemo(
-    () => firebase.firestore().collection(`users/${currentUser?.uid}/tags`),
-    [currentUser]
+    () => firebase.firestore().collection(`users/${user?.uid}/tags`),
+    [user]
   );
 
   const getTagList = useCallback(() => {

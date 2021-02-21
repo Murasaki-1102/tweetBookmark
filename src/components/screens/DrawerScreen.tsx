@@ -16,6 +16,24 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
   const { user } = useAuthState();
   const { auth, TWModal, logout } = useAuthAction();
 
+  const onPressAccountSetting = () => {
+    Alert.alert(
+      "アカウントを変更しますか？",
+      "ログアウトしてもデータは消えません。再度ログインすることで利用できます。",
+      [
+        { text: "いいえ", style: "cancel" },
+        {
+          text: "はい",
+          style: "destructive",
+          onPress: () => {
+            // logout();
+            auth();
+          },
+        },
+      ]
+    );
+  };
+
   const onPressLogout = () => {
     Alert.alert(
       "ログアウトしますか？",
@@ -71,7 +89,11 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
                   mr="lg"
                 />
               }
-              onPress={() => navigation.navigate(item.navigate)}
+              onPress={() =>
+                item.icon === "account"
+                  ? onPressAccountSetting()
+                  : navigation.navigate(item.navigate)
+              }
             >
               {item.name}
             </Button>
