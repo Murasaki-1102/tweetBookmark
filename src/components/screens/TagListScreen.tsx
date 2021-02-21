@@ -56,7 +56,7 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
 
   const onPressDelete = async (id: string, callback: () => Promise<void>) => {
     Alert.alert("タグを削除します", "よろしいですか？", [
-      { text: "キャンセル" },
+      { text: "キャンセル", style: "cancel" },
       {
         text: "削除する",
         style: "destructive",

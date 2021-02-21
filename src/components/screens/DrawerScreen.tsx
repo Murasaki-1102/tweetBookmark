@@ -1,8 +1,9 @@
 import React, { FC } from "react";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, Alert } from "react-native";
 import { Div, Button, Image, Text, Icon, useTheme } from "react-native-magnus";
 import { drawerMenu } from "../../constants/drawerMenu";
 import { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
+import { useAuthAction } from "../../hooks/useAuth/useAuth";
 
 type DrawerScreenProps = {
   navigation: DrawerNavigationHelpers;
@@ -10,6 +11,26 @@ type DrawerScreenProps = {
 
 export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
   const { theme } = useTheme();
+  console.log("🚀 ~ file: DrawerScreen.tsx ~ line 13 ~ theme");
+  const { auth, TWModal, logout } = useAuthAction();
+
+  const onPressLogout = () => {
+    Alert.alert(
+      "ログアウトしますか？",
+      "ログアウトしてもデータは消えません。再度ログインすることで利用できます。",
+      [
+        { text: "いいえ", style: "cancel" },
+        {
+          text: "はい",
+          style: "destructive",
+          onPress: () => {
+            logout();
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <>
       <SafeAreaView style={{ backgroundColor: theme.colors?.body }} />
@@ -46,7 +67,7 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
                   name={item.icon}
                   fontFamily="MaterialCommunityIcons"
                   fontSize="6xl"
-                  mr="xl"
+                  mr="lg"
                 />
               }
               onPress={() => navigation.navigate(item.navigate)}
@@ -55,7 +76,23 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
             </Button>
           ))}
         </Div>
-        <Div borderBottomWidth={1} borderColor="gray300" my="lg" />
+
+        <Div borderBottomWidth={1} borderColor="selected" my="lg" />
+
+        <Div py="md">
+          <Button
+            block
+            px="xl"
+            justifyContent="flex-start"
+            onPress={onPressLogout}
+          >
+            <Text color="text" fontSize="xl">
+              ログアウト
+            </Text>
+          </Button>
+        </Div>
+
+        <TWModal closeText="閉じる" />
       </Div>
     </>
   );

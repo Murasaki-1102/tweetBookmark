@@ -27,7 +27,7 @@ export const useTwitter = (props?: useTwitterProps) => {
   const getFavoriteTweets = async () =>
     twitter
       .get("favorites/list.json", {
-        count: 20,
+        count: 200,
         tweet_mode: "extended",
       })
       .then((res) => res as TweetType[]);
@@ -36,7 +36,7 @@ export const useTwitter = (props?: useTwitterProps) => {
     const max_id = new BigNumber(id).minus(1).c?.join("");
     return twitter
       .get("favorites/list.json", {
-        count: 20,
+        count: 200,
         max_id,
         tweet_mode: "extended",
       })

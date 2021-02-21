@@ -1,4 +1,11 @@
-import React, { FC, useState, createContext } from "react";
+import React, {
+  FC,
+  useState,
+  useCallback,
+  createContext,
+  useMemo,
+} from "react";
+import { NativeModules } from "react-native";
 import { useTwitter } from "../../lib/react-native-simple-twitter";
 import firebase from "../../lib/firebase";
 import { User } from "../../types/user";
@@ -10,7 +17,8 @@ export const AuthStateContext = createContext({} as AuthStateContextValue);
 
 type AuthActionContextValue = {
   auth: () => void;
-  TWModal: any;
+  logout: () => void;
+  TWModal: (props: any) => JSX.Element;
 };
 export const AuthActionContext = createContext({} as AuthActionContextValue);
 
@@ -54,17 +62,32 @@ export const AuthProvider: FC = ({ children }) => {
     },
   });
 
-  const auth = () => {
+  const auth = useCallback(() => {
     try {
       twitter.login();
     } catch (e) {
-      console.log(e.errors);
+      console.log(e);
     }
-  };
+  }, [twitter]);
+
+  const logout = useCallback(() => {
+    twitter.setAccessToken("", "");
+    setUser(null);
+    NativeModules.Networking.clearCookies(() => {});
+  }, [twitter]);
+
+  const actions = useMemo(
+    () => ({
+      auth,
+      logout,
+      TWModal,
+    }),
+    [auth, logout, TWModal]
+  );
 
   return (
     <AuthStateContext.Provider value={{ user }}>
-      <AuthActionContext.Provider value={{ auth, TWModal }}>
+      <AuthActionContext.Provider value={actions}>
         {children}
       </AuthActionContext.Provider>
     </AuthStateContext.Provider>
