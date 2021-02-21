@@ -8,6 +8,7 @@ import { useTagListState } from "../../hooks/useTagList/useTagList";
 import { MediaType, TweetType } from "../../types/tweet";
 import { PhotoModal } from "./Modal/PhotoModal";
 import { getHighestBitrateUrl } from "../../utils/twitter";
+import { yyyyMMdd } from "../../lib/date-fns";
 
 type TweetProps = {
   tweet: TweetType;
@@ -131,7 +132,7 @@ export const Tweet: FC<TweetProps> = ({ tweet }) => {
                 </Text>
 
                 <Div ml="xs" style={{ flexShrink: 0 }}>
-                  <Text color="gray600">2021/2/13</Text>
+                  <Text color="gray600">{yyyyMMdd(tweet.created_at)}</Text>
                 </Div>
               </Div>
               <BottomSheetButton tweet={tweet} />
