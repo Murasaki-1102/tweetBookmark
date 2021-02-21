@@ -39,7 +39,11 @@ export const BookmarkStackNavigator = () => {
         headerBackTitleVisible: false,
       }}
     >
-      <Stack.Screen name="TagList" component={TagListScreen} />
+      <Stack.Screen
+        name="TagList"
+        component={TagListScreen}
+        options={{ headerTitle: "ブックマーク" }}
+      />
       <Stack.Screen name="TagDetail" component={TagDetailScreen} />
     </Stack.Navigator>
   );

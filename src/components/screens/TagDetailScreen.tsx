@@ -41,6 +41,7 @@ export const TagDetailScreen: FC<TagDetailScreenProps> = ({
     unsubscribe = firebase
       .firestore()
       .collection(`users/${currentUser?.uid}/tags/${tag.id}/tweets`)
+      .orderBy("createdAt", "desc")
       .onSnapshot(
         (snapshot) => {
           const bookmarkedTweets: TweetType[] = [];

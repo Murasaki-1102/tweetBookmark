@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Div, Text, Button, Icon } from "react-native-magnus";
+import { Div, Text, Button } from "react-native-magnus";
 import { Tag } from "../../types/tag";
 
 type TagButtonProps = {
@@ -16,14 +16,13 @@ export const TagButton: FC<TagButtonProps> = ({
   return (
     <Button
       flex={1}
-      maxH={80}
       block
       rounded="none"
       borderBottomWidth={1}
       borderColor="selected"
       justifyContent="flex-start"
       prefix={
-        <Text fontSize="6xl" bg="selected" p={10} mr="lg" rounded="md">
+        <Text fontSize="6xl" bg="selected" p="sm" mr="lg" rounded="md">
           {tag.emoji}
         </Text>
       }

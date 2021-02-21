@@ -161,7 +161,7 @@ export const TagListScreen: FC<TagListScreenProps> = ({ navigation }) => {
             fontSize="6xl"
             bg="selected"
             rounded="md"
-            p={12}
+            p="md"
             mr="lg"
           />
         }

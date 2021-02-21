@@ -39,7 +39,11 @@ export const HomeStackNavigator = () => {
         headerBackTitleVisible: false,
       }}
     >
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ title: "いいねしたツイート" }}
+      />
       <Stack.Screen
         name="EditTheme"
         component={EditThemeScreen}
