@@ -3,11 +3,14 @@ import { createStackNavigator, Header } from "@react-navigation/stack";
 import { HomeScreen } from "../screens/HomeScreen";
 import { StatusBar, useTheme, Icon } from "react-native-magnus";
 import { EditThemeScreen } from "../screens/EditThemeScreen";
+import { RootStackParamList } from "../../types/navigation";
+import { HelpScreen } from "../screens/HelpScreen";
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 export const HomeStackNavigator = () => {
   const { theme } = useTheme();
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -48,6 +51,11 @@ export const HomeStackNavigator = () => {
         name="EditTheme"
         component={EditThemeScreen}
         options={{ title: "テーマの変更" }}
+      />
+      <Stack.Screen
+        name="Help"
+        component={HelpScreen}
+        options={{ title: "お問い合わせ" }}
       />
     </Stack.Navigator>
   );
