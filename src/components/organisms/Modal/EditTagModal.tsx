@@ -1,13 +1,10 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { SafeAreaView, KeyboardAvoidingView } from "react-native";
 import Modal from "react-native-modal";
 import { Div, Text, Button, Icon, Input, useTheme } from "react-native-magnus";
 import EmojiBoard from "react-native-emoji-board";
 import firebase from "../../../lib/firebase";
-import {
-  useTagListAction,
-  useTagListState,
-} from "../../../hooks/useTagList/useTagList";
+import { useTagListAction } from "../../../hooks/useTagList/useTagList";
 import { useModalAction } from "../../../hooks/useModal/useModalState";
 
 type EditTagModalProps = {
@@ -16,14 +13,23 @@ type EditTagModalProps = {
 };
 
 export const EditTagModal: FC<EditTagModalProps> = ({ id, isVisible }) => {
-  console.log("🚀 ~ file: EditTagModal.tsx ~ line 21 ~ id");
-  const { tagList } = useTagListState();
-  const { addTag, updateTagById } = useTagListAction();
-  const tag = tagList.find((tag) => tag.id === id);
-
-  const [emoji, setEmoji] = useState(tag?.emoji || "💭");
-  const [name, setName] = useState(tag?.name || "");
+  const [emoji, setEmoji] = useState("💭");
+  const [name, setName] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const { getTagById, addTag, updateTagById } = useTagListAction();
+
+  useEffect(() => {
+    (async () => {
+      if (id) {
+        const currentTag = await getTagById(id);
+        setName(currentTag.name);
+        setEmoji(currentTag.emoji);
+      }
+    })();
+  }, [id]);
+
+  console.log("🚀 ~ file: EditTagModal.tsx ~ line 21 ~ id");
+
   const { theme } = useTheme();
   const { closeModal } = useModalAction();
 

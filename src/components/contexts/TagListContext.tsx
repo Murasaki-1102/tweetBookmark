@@ -17,6 +17,7 @@ type TagListStateContextValue = {
 type TagListActionContextValue = {
   setTagList: Dispatch<SetStateAction<Tag[]>>;
   getTagList: () => void;
+  getTagById: (id: string) => Promise<Tag>;
   addTag: (name: string, emoji: string) => void;
   updateTagById: (id: string, name: string, emoji: string) => void;
   deleteTagById: (id: string, callback?: () => Promise<void>) => void;
@@ -52,6 +53,17 @@ export const TagListProvider: FC = ({ children }) => {
       setTagList(userTagList);
     });
   }, [collection]);
+
+  const getTagById = useCallback(
+    async (id: string) =>
+      await collection
+        .doc(id)
+        .get()
+        .then((doc) => {
+          return doc.data() as Tag;
+        }),
+    [collection]
+  );
 
   const addTag = useCallback(
     async (name: string, emoji: string) => {
@@ -109,11 +121,12 @@ export const TagListProvider: FC = ({ children }) => {
     () => ({
       setTagList,
       getTagList,
+      getTagById,
       addTag,
       updateTagById,
       deleteTagById,
     }),
-    [setTagList, getTagList, addTag, updateTagById, deleteTagById]
+    [setTagList, getTagList, getTagById, addTag, updateTagById, deleteTagById]
   );
 
   return (
