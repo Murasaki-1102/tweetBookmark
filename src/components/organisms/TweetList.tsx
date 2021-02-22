@@ -19,7 +19,7 @@ type SwipeableTweetListProps = {
   keyExtractor: (item: TweetType) => string;
   renderItem: ({ item }: { item: TweetType }) => JSX.Element;
   onEndReached?: () => void;
-  tag?: Tag;
+  tag: Tag;
 };
 
 const SwipeableTweetList: FC<SwipeableTweetListProps> = ({
@@ -121,6 +121,7 @@ export const TweetList: FC<TweetListProps> = ({
     <>
       {tag ? (
         <SwipeableTweetList
+          tag={tag}
           tweets={tweets}
           keyExtractor={keyExtractor}
           renderItem={renderItem}

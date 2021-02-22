@@ -23,6 +23,7 @@ export const TagDetailScreen: FC<TagDetailScreenProps> = ({
     all: [] as TweetType[],
     tmp: [] as TweetType[],
   });
+  const [keyword, setKeyword] = useState("");
   const { tag } = route.params;
   const { user } = useAuthState();
   console.log("🚀 ~ file: TagDetailScreen.tsx ~ line 19 ~ tag");
@@ -60,6 +61,7 @@ export const TagDetailScreen: FC<TagDetailScreenProps> = ({
 
   const filterTweetByKeyword = useCallback(
     (keyword: string) => {
+      setKeyword(keyword);
       const lowerCaseKeyword = keyword.toLowerCase();
       const filterTweet = tweets.tmp.filter((tweet) =>
         tweet.full_text.toLowerCase().includes(lowerCaseKeyword)
@@ -72,7 +74,7 @@ export const TagDetailScreen: FC<TagDetailScreenProps> = ({
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Div flex={1}>
-        <SearchInput onChangeText={filterTweetByKeyword} />
+        <SearchInput value={keyword} onChangeText={filterTweetByKeyword} />
         <TweetList tweets={tweets.all} tag={tag} />
       </Div>
     </SafeAreaView>
