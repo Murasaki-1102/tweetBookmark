@@ -16,7 +16,8 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
   const { user } = useAuthState();
   const { auth, TWModal, logout } = useAuthAction();
 
-  const onPressAccountSetting = () => {
+  // TypeError: Invalid attempt to spread non-iterable instance.　FIX予定
+  const onPressAccountSetting = () =>
     Alert.alert(
       "アカウントを変更しますか？",
       "ログアウトしてもデータは消えません。再度ログインすることで利用できます。",
@@ -32,9 +33,9 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
         },
       ]
     );
-  };
 
-  const onPressLogout = () => {
+  // TypeError: Invalid attempt to spread non-iterable instance.　FIX予定
+  const onPressLogout = () =>
     Alert.alert(
       "ログアウトしますか？",
       "ログアウトしてもデータは消えません。再度ログインすることで利用できます。",
@@ -49,7 +50,6 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
         },
       ]
     );
-  };
 
   return (
     <>
