@@ -101,59 +101,54 @@ const MediaList: FC<{ media: MediaType[] }> = ({ media }) => {
   );
 };
 
-export const Tweet: FC<TweetProps> = ({ tweet }) => {
-  console.log("🚀 ~ file: Tweet.tsx ~ line 15");
+export const Tweet: FC<TweetProps> = ({ tweet }) => (
+  <TouchableHighlight style={{ flex: 1 }}>
+    <Div flex={1} w="100%" row borderBottomWidth={1} borderColor="selected">
+      <Div flex={0.23} alignItems="center">
+        <Image
+          h={50}
+          w={50}
+          rounded="circle"
+          mt="sm"
+          source={{
+            uri: getHighestImageQualityUrl(tweet.user.profile_image_url_https),
+          }}
+        />
+      </Div>
+      <Div flex={0.77}>
+        <Div py="md">
+          <Div row alignItems="center" justifyContent="space-between">
+            <Div row alignItems="center" flex={1}>
+              <Text fontWeight="bold" maxW="70%" numberOfLines={1}>
+                {tweet.user.name}
+              </Text>
+              <Text
+                ml="xs"
+                color="gray600"
+                style={{ flexShrink: 1 }}
+                numberOfLines={1}
+              >
+                {`@${tweet.user.screen_name}`}
+              </Text>
 
-  return (
-    <TouchableHighlight style={{ flex: 1 }}>
-      <Div flex={1} w="100%" row borderBottomWidth={1} borderColor="selected">
-        <Div flex={0.23} alignItems="center">
-          <Image
-            h={50}
-            w={50}
-            rounded="circle"
-            mt="lg"
-            source={{
-              uri: getHighestImageQualityUrl(
-                tweet.user.profile_image_url_https
-              ),
-            }}
-          />
-        </Div>
-        <Div flex={0.77}>
-          <Div py="md">
-            <Div row alignItems="center" justifyContent="space-between">
-              <Div row alignItems="center" flex={1}>
-                <Text fontWeight="bold" maxW="70%" numberOfLines={1}>
-                  {tweet.user.name}
-                </Text>
-                <Text
-                  ml="xs"
-                  color="gray600"
-                  style={{ flexShrink: 1 }}
-                  numberOfLines={1}
-                >
-                  {`@${tweet.user.screen_name}`}
-                </Text>
-
-                <Div ml="xs" style={{ flexShrink: 0 }}>
-                  <Text color="gray600">{yyyyMMdd(tweet.created_at)}</Text>
-                </Div>
+              <Div ml="xs" style={{ flexShrink: 0 }}>
+                <Text color="gray600">{yyyyMMdd(tweet.created_at)}</Text>
               </Div>
-              <BottomSheetButton tweet={tweet} />
             </Div>
+            <BottomSheetButton tweet={tweet} />
+          </Div>
 
-            <Div mt="sm" pr="xl">
-              <Text>{tweet.full_text}</Text>
-              {tweet.extended_entities?.media && (
-                <Div row flexWrap="wrap" w="100%">
-                  <MediaList media={tweet.extended_entities.media} />
-                </Div>
-              )}
-            </Div>
+          <Div mt="sm" pr="xl">
+            <Text>{tweet.full_text}</Text>
+            {tweet.extended_entities?.media && (
+              <Div row flexWrap="wrap" w="100%">
+                <MediaList media={tweet.extended_entities.media} />
+              </Div>
+            )}
+          </Div>
 
-            <Div row mt="md">
-              {/* <Div row alignItems="center">
+          <Div row mt="md">
+            {/* <Div row alignItems="center">
                 <Icon
                   name="chatbubble-outline"
                   fontFamily="Ionicons"
@@ -171,7 +166,7 @@ export const Tweet: FC<TweetProps> = ({ tweet }) => {
                 />
                 <Text>233</Text>
               </Div> */}
-              {/* <Div row alignItems="center" ml="2xl">
+            {/* <Div row alignItems="center" ml="2xl">
                 <Icon
                   name="favorite-outline"
                   fontFamily="MaterialIcons"
@@ -180,10 +175,9 @@ export const Tweet: FC<TweetProps> = ({ tweet }) => {
                 />
                 <Text>3333</Text>
               </Div> */}
-            </Div>
           </Div>
         </Div>
       </Div>
-    </TouchableHighlight>
-  );
-};
+    </Div>
+  </TouchableHighlight>
+);
