@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { NativeModules } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SplashScreen from "expo-splash-screen";
 import { useTwitter } from "../../lib/react-native-simple-twitter";
 import firebase from "../../lib/firebase";
 import { User } from "../../types/user";
@@ -26,6 +27,7 @@ export const AuthActionContext = createContext({} as AuthActionContextValue);
 
 export const AuthProvider: FC = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { twitter, TWModal } = useTwitter({
     onSuccess: async (user, accessToken) => {
@@ -44,18 +46,22 @@ export const AuthProvider: FC = ({ children }) => {
         .auth()
         .signInWithCredential(credential)
         .then(async (result) => {
-          if (result.additionalUserInfo?.isNewUser) {
+          const userDocument = await firebase
+            .firestore()
+            .collection("users")
+            .doc(result.user?.uid)
+            .get();
+
+          if (!userDocument.exists) {
             firebase.firestore().collection("users").doc(result.user?.uid).set({
               uid: result.user?.uid,
               name: result.user?.displayName,
-              // screenName: result.additionalUserInfo?.username,
               photoUrl: result.user?.photoURL,
             });
           }
           setUser({
             uid: result.user?.uid!,
             name: result.user?.displayName!,
-            // screenName: result.additionalUserInfo?.username!,
             photoUrl: result.user?.photoURL!,
           });
         });
@@ -64,7 +70,10 @@ export const AuthProvider: FC = ({ children }) => {
 
   useEffect(() => {
     if (user) return;
+    const loadSplashScreen = async () =>
+      await SplashScreen.preventAutoHideAsync();
 
+    loadSplashScreen();
     firebase.auth().onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
         const accessToken = await AsyncStorage.getItem(
@@ -79,37 +88,17 @@ export const AuthProvider: FC = ({ children }) => {
           name: firebaseUser.displayName!,
           photoUrl: firebaseUser.photoURL!,
         });
+        setIsLoading(false);
+        await SplashScreen.hideAsync();
+      } else {
+        setUser(null);
+        if (isLoading) {
+          await SplashScreen.hideAsync();
+          setIsLoading(false);
+        }
       }
     });
   }, []);
-
-  // const setAccessToken = useCallback(
-  //   (accessToken: string, accessTokenSecret: string) => {
-  //     twitter.setAccessToken(accessToken, accessTokenSecret);
-  //   },
-  //   []
-  // );
-
-  // const onAuthStateChanged = useCallback(async () => {
-  //   if (user) return;
-
-  //   firebase.auth().onAuthStateChanged(async (firebaseUser) => {
-  //     if (firebaseUser) {
-  //       const accessToken = await AsyncStorage.getItem(
-  //         "@oauthToken"
-  //       ).then((result) => JSON.parse(result!));
-  //       await twitter.setAccessToken(
-  //         accessToken.oauth_token,
-  //         accessToken.oauth_token_secret
-  //       );
-  //       await setUser({
-  //         uid: firebaseUser.uid!,
-  //         name: firebaseUser.displayName!,
-  //         photoUrl: firebaseUser.photoURL!,
-  //       });
-  //     }
-  //   });
-  // }, [user]);
 
   const auth = useCallback(() => {
     try {
@@ -121,7 +110,7 @@ export const AuthProvider: FC = ({ children }) => {
 
   const logout = useCallback(() => {
     twitter.setAccessToken("", "");
-    setUser(null);
+    firebase.auth().signOut();
     NativeModules.Networking.clearCookies(() => {});
   }, [twitter]);
 
@@ -137,7 +126,7 @@ export const AuthProvider: FC = ({ children }) => {
   return (
     <AuthStateContext.Provider value={{ user }}>
       <AuthActionContext.Provider value={actions}>
-        {children}
+        {!isLoading && children}
       </AuthActionContext.Provider>
     </AuthStateContext.Provider>
   );
