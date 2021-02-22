@@ -67,9 +67,9 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
           <Text mt="lg" fontWeight="bold" fontSize="xl">
             {user?.name}
           </Text>
-          <Text mt="xs" color="gray600">
+          {/* <Text mt="xs" color="gray600">
             {`@${user?.screenName}`}
-          </Text>
+          </Text> */}
         </Div>
 
         <Div py="xl">

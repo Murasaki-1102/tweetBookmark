@@ -1,11 +1,13 @@
 import React, {
   FC,
   useState,
+  useEffect,
   useCallback,
   createContext,
   useMemo,
 } from "react";
 import { NativeModules } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTwitter } from "../../lib/react-native-simple-twitter";
 import firebase from "../../lib/firebase";
 import { User } from "../../types/user";
@@ -31,36 +33,83 @@ export const AuthProvider: FC = ({ children }) => {
         accessToken.oauth_token,
         accessToken.oauth_token_secret
       );
+      AsyncStorage.setItem("@oauthToken", JSON.stringify(accessToken));
+
       const credential = firebase.auth.TwitterAuthProvider.credential(
         accessToken.oauth_token,
         accessToken.oauth_token_secret
       );
+
       firebase
         .auth()
         .signInWithCredential(credential)
         .then(async (result) => {
-          const userDocument = await firebase
-            .firestore()
-            .collection("users")
-            .doc(result.user?.uid)
-            .get();
-          if (!userDocument.exists) {
+          if (result.additionalUserInfo?.isNewUser) {
             firebase.firestore().collection("users").doc(result.user?.uid).set({
               uid: result.user?.uid,
               name: result.user?.displayName,
-              screenName: result.additionalUserInfo?.username,
+              // screenName: result.additionalUserInfo?.username,
               photoUrl: result.user?.photoURL,
             });
           }
           setUser({
             uid: result.user?.uid!,
             name: result.user?.displayName!,
-            screenName: result.additionalUserInfo?.username!,
+            // screenName: result.additionalUserInfo?.username!,
             photoUrl: result.user?.photoURL!,
           });
         });
     },
   });
+
+  useEffect(() => {
+    if (user) return;
+
+    firebase.auth().onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        const accessToken = await AsyncStorage.getItem(
+          "@oauthToken"
+        ).then((result) => JSON.parse(result!));
+        twitter.setAccessToken(
+          accessToken.oauth_token,
+          accessToken.oauth_token_secret
+        );
+        setUser({
+          uid: firebaseUser.uid!,
+          name: firebaseUser.displayName!,
+          photoUrl: firebaseUser.photoURL!,
+        });
+      }
+    });
+  }, []);
+
+  // const setAccessToken = useCallback(
+  //   (accessToken: string, accessTokenSecret: string) => {
+  //     twitter.setAccessToken(accessToken, accessTokenSecret);
+  //   },
+  //   []
+  // );
+
+  // const onAuthStateChanged = useCallback(async () => {
+  //   if (user) return;
+
+  //   firebase.auth().onAuthStateChanged(async (firebaseUser) => {
+  //     if (firebaseUser) {
+  //       const accessToken = await AsyncStorage.getItem(
+  //         "@oauthToken"
+  //       ).then((result) => JSON.parse(result!));
+  //       await twitter.setAccessToken(
+  //         accessToken.oauth_token,
+  //         accessToken.oauth_token_secret
+  //       );
+  //       await setUser({
+  //         uid: firebaseUser.uid!,
+  //         name: firebaseUser.displayName!,
+  //         photoUrl: firebaseUser.photoURL!,
+  //       });
+  //     }
+  //   });
+  // }, [user]);
 
   const auth = useCallback(() => {
     try {
