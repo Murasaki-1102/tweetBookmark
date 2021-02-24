@@ -53,6 +53,7 @@ export const EditTagModal: FC<EditTagModalProps> = ({ id, isVisible }) => {
   return (
     <Modal
       isVisible={isVisible}
+      animationIn="fadeIn"
       style={{ margin: 0 }}
       onSwipeComplete={closeModal}
       swipeDirection="down"
