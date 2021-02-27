@@ -3,7 +3,6 @@ import { SafeAreaView, KeyboardAvoidingView } from "react-native";
 import Modal from "react-native-modal";
 import { Div, Text, Button, Icon, Input, useTheme } from "react-native-magnus";
 import EmojiBoard from "react-native-emoji-board";
-import firebase from "../../../lib/firebase";
 import { useTagListAction } from "../../../hooks/useTagList/useTagList";
 import { useModalAction } from "../../../hooks/useModal/useModalState";
 
@@ -38,14 +37,13 @@ export const EditTagModal: FC<EditTagModalProps> = ({ id, isVisible }) => {
   };
 
   const onSubmit = async () => {
-    const { currentUser } = firebase.auth();
-    if (currentUser) {
-      if (id) {
-        updateTagById(id, name, emoji);
-      } else {
-        addTag(name, emoji);
-      }
+    if (id) {
+      updateTagById(id, name, emoji);
+    } else {
+      addTag(name, emoji);
     }
+    setEmoji("💭");
+    setName("");
 
     onClose();
   };
