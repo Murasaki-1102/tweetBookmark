@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+  	function isAuthenticated() { 
+    	return request.auth != null;
+    }
+    
+    function isUserAuthenticated(userId) {
+      return isAuthenticated() && userId == request.auth.uid;
+    }
+    
+    function isValidUser(user) {
+            return user.size() == 3
+            && 'photoUrl' in user && user.photoUrl is string
+            && 'name' in user && user.name is string
+            && 'uid' in user && user.uid is string;
+        }
+    
+    function isValidTag(tag) {
+      return tag.size() == 5 
+      			&& 'createdAt' in tag && tag.createdAt is timestamp
+     				&& 'emoji' in tag && tag.emoji is string
+            && 'name' in tag && tag.name is string 
+            && 'index' in tag && tag.index is number
+            && 'tweets' in tag && tag.tweets is list
+    }
+    
+    function isValidTweet(tweet) {
+    	return tweet.size() == 3 
+      && 'createdAt' in tweet && tweet.createdAt is timestamp
+      && 'tagsId' in tweet && tweet.tagsId is list
+      && 'tweet' in tweet && tweet.tweet is map
+    }
+    
+  	match /users/{userId} {
+  		allow get: if isUserAuthenticated(userId);
+      
+      allow create: if isUserAuthenticated(userId)
+            && isValidUser(request.resource.data)
+            && request.resource.data.uid == userId;
+            
+      match /tweets/{tweetId} {
+      	allow read: if isUserAuthenticated(userId);
+        allow create: if isUserAuthenticated(userId) 
+        && isValidTweet(request.resource.data);
+        allow update: if isUserAuthenticated(userId) 
+        && isValidTweet(request.resource.data);
+        allow delete : if isUserAuthenticated(userId);
+        
+      }
+      
+      match /tags/{tagId} {
+      	allow create: if isUserAuthenticated(userId) 
+        && isValidTag(request.resource.data)
+        // && request.resource.data.createdAt == request.time 
+        && (request.resource.data.emoji.size() > 0 )
+        && (request.resource.data.name.size() > 0 && request.resource.data.name.size() < 20);
+        
+      	allow read: if isUserAuthenticated(userId);
+        
+        allow update: if isUserAuthenticated(userId)
+        && isValidTag(request.resource.data)
+        // && request.resource.data.createdAt == request.time 
+        && (request.resource.data.emoji.size() > 0 )
+        && (request.resource.data.name.size() > 0 && request.resource.data.name.size() < 20);
+        
+        allow delete : if isUserAuthenticated(userId)
+        
+        match /tweets/{tweetId} {
+          allow read: if isUserAuthenticated(userId);
+          
+          allow create: if isUserAuthenticated(userId) 
+          && isValidTweet(request.resource.data);
+          allow update: if isUserAuthenticated(userId);
+          allow delete: if isUserAuthenticated(userId);
+        }
+      }
+  	}
+  }
+}

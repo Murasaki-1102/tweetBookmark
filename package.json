@@ -5,7 +5,11 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.13.4",
@@ -56,9 +60,12 @@
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
+    "@firebase/rules-unit-testing": "^1.2.2",
+    "@types/jest": "^26.0.20",
     "@types/react": "~16.9.35",
     "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.63.2",
+    "jest-expo": "^40.0.2",
     "typescript": "~4.0.0"
   },
   "resolutions": {
