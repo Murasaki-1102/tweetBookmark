@@ -1,18 +1,32 @@
-import React, { FC } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { SafeAreaView, Alert } from "react-native";
 import { Div, Button, Image, Text, Icon, useTheme } from "react-native-magnus";
 import { drawerMenu } from "../../constants/drawerMenu";
 import { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
 import { useAuthAction, useAuthState } from "../../hooks/useAuth/useAuth";
 import { getHighestImageQualityUrl } from "../../utils/twitter";
+import { useTwitter } from "../../lib/react-native-simple-twitter";
 
 type DrawerScreenProps = {
   navigation: DrawerNavigationHelpers;
 };
 
+const LimitStatus = () => {
+  // Fix
+  const [limitStatus, setLimitStatus] = useState({} as any);
+  const { getRateLimitStatus } = useTwitter();
+  useEffect(() => {
+    (async () => {
+      const status = await getRateLimitStatus();
+      setLimitStatus(status.resources.favorites["/favorites/list"]);
+    })();
+  }, []);
+
+  return <Text ml="sm">{limitStatus.remaining === 0 ? "制限中" : "正常"}</Text>;
+};
+
 export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
   const { theme } = useTheme();
-  console.log("🚀 ~ file: DrawerScreen.tsx ~ line 13 ~ theme");
   const { user } = useAuthState();
   const { auth, TWModal, logout } = useAuthAction();
 
@@ -67,9 +81,6 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
           <Text mt="lg" fontWeight="bold" fontSize="xl">
             {user?.name}
           </Text>
-          {/* <Text mt="xs" color="gray600">
-            {`@${user?.screenName}`}
-          </Text> */}
         </Div>
 
         <Div py="xl">
@@ -103,8 +114,13 @@ export const DrawerScreen: FC<DrawerScreenProps> = ({ navigation }) => {
         <Div borderBottomWidth={1} borderColor="selected" my="lg" />
 
         <Div py="md">
+          <Div row px="xl" alignItems="center">
+            <Text>Twitter API :</Text>
+            <LimitStatus />
+          </Div>
           <Button
             block
+            mt="lg"
             px="xl"
             justifyContent="flex-start"
             onPress={onPressLogout}
