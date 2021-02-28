@@ -24,13 +24,24 @@ export const useTwitter = (props?: useTwitterProps) => {
     twitter.setConsumerKey(API_KEY, API_KEY_SECRET);
   }, []);
 
+  const getRateLimitStatus = async () => {
+    try {
+      return twitter.get("application/rate_limit_status.json", {
+        resources: "favorites",
+      });
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
   const getFavoriteTweets = async () =>
     twitter
       .get("favorites/list.json", {
         count: 200,
         tweet_mode: "extended",
       })
-      .then((res) => res as TweetType[]);
+      .then((res) => res as TweetType[])
+      .catch((e) => e.errors);
 
   const getMoreFavoriteTweets = async (id: string) => {
     const max_id = new BigNumber(id).minus(1).c?.join("");
@@ -40,12 +51,14 @@ export const useTwitter = (props?: useTwitterProps) => {
         max_id,
         tweet_mode: "extended",
       })
-      .then((res: any) => res as TweetType[]);
+      .then((res) => res as TweetType[])
+      .catch((e) => e.errors);
   };
 
   return {
     twitter,
     TWModal,
+    getRateLimitStatus,
     getFavoriteTweets,
     getMoreFavoriteTweets,
   };
