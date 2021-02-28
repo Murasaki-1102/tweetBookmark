@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from "react";
-import { FlatList, ActivityIndicator } from "react-native";
+import { FlatList } from "react-native";
 import { Button, Icon } from "react-native-magnus";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { TweetType } from "../../types/tweet";
@@ -10,7 +10,6 @@ import { useAuthState } from "../../hooks/useAuth/useAuth";
 
 type TweetListProps = {
   tweets: TweetType[];
-  onEndReached?: () => void;
   tag?: Tag;
 };
 
@@ -18,7 +17,6 @@ type SwipeableTweetListProps = {
   tweets: TweetType[];
   keyExtractor: (item: TweetType) => string;
   renderItem: ({ item }: { item: TweetType }) => JSX.Element;
-  onEndReached?: () => void;
   tag: Tag;
 };
 
@@ -33,7 +31,6 @@ const SwipeableTweetList: FC<SwipeableTweetListProps> = ({
     // FIX
 
     const db = firebase.firestore();
-    // const batch = db.batch();
 
     const tweetDoc = db
       .collection(`users/${user?.uid}/tweets`)
@@ -103,19 +100,13 @@ const SwipeableTweetList: FC<SwipeableTweetListProps> = ({
   );
 };
 
-export const TweetList: FC<TweetListProps> = ({
-  tweets,
-  onEndReached,
-  tag,
-}) => {
+export const TweetList: FC<TweetListProps> = ({ tweets, tag }) => {
   const keyExtractor = useCallback((item) => item.id_str, []);
 
   const renderItem = useCallback(
     ({ item }: { item: TweetType }) => <Tweet tweet={item} />,
     []
   );
-
-  console.log("🚀 ~ file: TweetList.tsx ~ line 11 ~ ");
 
   return (
     <>
@@ -131,7 +122,6 @@ export const TweetList: FC<TweetListProps> = ({
           data={tweets}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
-          onEndReached={onEndReached}
         />
       )}
     </>
