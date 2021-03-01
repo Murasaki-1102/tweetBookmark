@@ -7,7 +7,7 @@ process.env.FIRESTORE_EMULATOR_HOST = "localhost:8080";
 
 const COVERAGE_URL = `http://${process.env.FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/${FIREBASE_PROJECT_ID}:ruleCoverage.html`;
 
-const getAuthedFirestore = (auth?: { uid: string } | null) =>
+const getAuthedFirestore = (auth?: { uid: string } | any) =>
   firebase
     .initializeTestApp({ projectId: FIREBASE_PROJECT_ID, auth })
     .firestore();
@@ -103,6 +103,181 @@ describe("FIRESTORE - TEST", () => {
       const db = getAuthedFirestore({ uid: "alice" });
       const userRef = db.collection("users").doc("bob");
       await firebase.assertFails(userRef.get());
+    });
+  });
+
+  describe("Tag", () => {
+    test("SET - Authed", async () => {
+      const db = getAuthedFirestore({ uid: "alice" });
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertSucceeds(
+        tagRef.set({
+          name: "test",
+          emoji: "🙆‍♂️",
+          index: 0,
+          tweets: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+      );
+    });
+
+    test("SET - Not Authed", async () => {
+      const db = getAuthedFirestore(null);
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertFails(
+        tagRef.set({
+          name: "test",
+          emoji: "🙆‍♂️",
+          index: 0,
+          tweets: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+      );
+    });
+
+    test("SET - Unmatched Uid", async () => {
+      const db = getAuthedFirestore({ uid: "bob" });
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertFails(
+        tagRef.set({
+          name: "test",
+          emoji: "✅",
+          index: 0,
+          tweets: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+      );
+    });
+
+    test("SET - IsValid by size", async () => {
+      const db = getAuthedFirestore({ uid: "alice" });
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertFails(
+        tagRef.set({
+          emoji: "✅",
+          index: 0,
+          tweets: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+      );
+    });
+
+    test("SET - IsValid by emoji length", async () => {
+      const db = getAuthedFirestore({ uid: "alice" });
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertFails(
+        tagRef.set({
+          name: "test",
+          emoji: "",
+          index: 0,
+          tweets: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+      );
+    });
+
+    test("UPDATE - Matched Uid", async () => {
+      const _db = getAuthedFirestore({ uid: "alice" });
+      const _tagRef = _db.collection("users/alice/tags").doc("test");
+      await _tagRef.set({
+        name: "test",
+        emoji: "✅",
+        index: 0,
+        tweets: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      const db = getAuthedFirestore({ uid: "alice" });
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertSucceeds(
+        tagRef.update({
+          name: "test2",
+          emoji: "✅",
+          index: 0,
+          tweets: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+      );
+    });
+
+    test("UPDATE - Unmatched Uid", async () => {
+      const _db = getAuthedFirestore({ uid: "alice" });
+      const _tagRef = _db.collection("users/alice/tags").doc("test");
+      await _tagRef.set({
+        name: "test",
+        emoji: "✅",
+        index: 0,
+        tweets: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      const db = getAuthedFirestore({ uid: "bob" });
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertFails(
+        tagRef.update({
+          name: "test2",
+          emoji: "✅",
+          index: 0,
+          tweets: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+      );
+    });
+
+    test("UPDATE - IsValid", async () => {
+      const _db = getAuthedFirestore({ uid: "alice" });
+      const _tagRef = _db.collection("users/alice/tags").doc("test");
+      await _tagRef.set({
+        name: "test",
+        emoji: "✅",
+        index: 0,
+        tweets: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      const db = getAuthedFirestore({ uid: "alice" });
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertFails(
+        tagRef.update({
+          name: "",
+          emoji: "✅",
+          index: 0,
+          tweets: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+      );
+    });
+
+    test("DELETE - Matched Uid", async () => {
+      const _db = getAuthedFirestore({ uid: "alice" });
+      const _tagRef = _db.collection("users/alice/tags").doc("test");
+      await _tagRef.set({
+        name: "test",
+        emoji: "✅",
+        index: 0,
+        tweets: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      const db = getAuthedFirestore({ uid: "alice" });
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertSucceeds(tagRef.delete());
+    });
+
+    test("DELETE - Unmatched Uid", async () => {
+      const _db = getAuthedFirestore({ uid: "alice" });
+      const _tagRef = _db.collection("users/alice/tags").doc("test");
+      await _tagRef.set({
+        name: "test",
+        emoji: "✅",
+        index: 0,
+        tweets: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      const db = getAuthedFirestore({ uid: "bob" });
+      const tagRef = db.collection("users/alice/tags").doc("test");
+      await firebase.assertFails(tagRef.delete());
     });
   });
 });
